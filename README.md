@@ -1,2 +1,2 @@
 # ChessApp
-Hobby Chess App
+Hobby Chess Application, the long term goal is a chess engine of some sort
