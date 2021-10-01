@@ -26,7 +26,7 @@ abstract public class Figure {
         view = new FigureView(imageName, this);
 
         tile = ChessBoard.board.getTileAt(posCol,posRow);
-        moveTo(tile);
+        tile.addFigure(this);
 
     }
 
@@ -97,7 +97,7 @@ abstract public class Figure {
 
     public void updatePossibleMoves(){
         possibleMoves = calculatePossibleMoves();
-        ChessBoard.board.addTilesInCheckForOpponentFrom(this, possibleMoves);
+        ChessBoard.board.addIllegalKingTilesForOpponent(this, possibleMoves);
     }
 
 

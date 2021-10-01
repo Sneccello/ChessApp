@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ConcurrentModificationException;
 
 public class ChessBoardPanel extends JPanel implements MouseListener {
 
@@ -25,7 +26,12 @@ public class ChessBoardPanel extends JPanel implements MouseListener {
 
     @Override
     public void paintComponent(Graphics g){
-        boardView.paint(g);
+        try{
+            boardView.paint(g);
+        }
+        catch(ConcurrentModificationException ex) {//TODO
+            System.err.println(ex.getMessage());
+        }
     }
 
     @Override

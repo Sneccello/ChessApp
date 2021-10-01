@@ -20,8 +20,8 @@ public class ChessBoard {
     private final ChessBoardView chessBoardView;
 
 
-    private final HashMap<Tile, HashSet<Figure>> tilesInCheckForWhite = new HashMap<>();
-    private final HashMap<Tile, HashSet<Figure>> tilesInCheckForBlack = new HashMap<>();
+    private final HashSet<Tile> illegalTilesForWhiteKing = new HashSet<>();
+    private final HashSet<Tile> illegalTilesForBlackKing = new HashSet<>();
 
 
 
@@ -47,32 +47,14 @@ public class ChessBoard {
     }
 
 
-    public void addTilesInCheckForOpponentFrom(Figure checkerFigure, HashSet<Tile> tilesInCheck){
-        //For example a white figure signals that it sees the hashset of tiles. These tiles are in check for the opposite
-        //,black color. So the hashmap where the black "in-check" tiles are stored becomes the MapToWorkWith.In this hashmap
-        //I store the Tile which is in check and also a hashset of figures as values that see that tile.
-        HashMap<Tile, HashSet<Figure>> mapToWorkWith = (checkerFigure.getColor() == FigureColor.WHITE ? tilesInCheckForBlack : tilesInCheckForWhite);
-        for(Tile tile : tilesInCheck){
-            if(mapToWorkWith.containsKey(tile)){
-                mapToWorkWith.get(tile).add(checkerFigure);
-            }
-            else{
-                HashSet<Figure> hs = new HashSet<>();
-                hs.add(checkerFigure);
-                mapToWorkWith.put(tile,hs);
-            }
-        }
-
+    public void addIllegalKingTilesForOpponent(Figure sender, HashSet<Tile> illegalTiles){
+        HashSet<Tile> setToWorkWith = (sender.getColor() == FigureColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
+        setToWorkWith.addAll(illegalTiles);
     }
 
 
-    public HashMap<Tile,HashSet<Figure>> getTilesInCheckFor(FigureColor color){
-        if(color == FigureColor.WHITE){
-            return tilesInCheckForWhite;
-        }
-        else{
-            return tilesInCheckForBlack;
-        }
+    public HashSet<Tile> getIllegalKingMovesFor(FigureColor color){
+        return (color == FigureColor.WHITE ? illegalTilesForWhiteKing : illegalTilesForBlackKing);
     }
 
 
@@ -94,6 +76,7 @@ public class ChessBoard {
     public void addFigure(Figure f){
         figures.add(f);
         chessBoardView.addFigView(f.getView());
+
     }
 
     public Tile getTileAt(int col, int row){
@@ -101,8 +84,8 @@ public class ChessBoard {
     }
 
     public void moveWasMade(){
-        tilesInCheckForBlack.clear();
-        tilesInCheckForWhite.clear();
+        illegalTilesForBlackKing.clear();
+        illegalTilesForWhiteKing.clear();
 
         for(Figure f: figures){
             f.updatePossibleMoves();

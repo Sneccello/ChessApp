@@ -6,8 +6,14 @@ import BoardElements.Tile;
 import java.util.HashSet;
 
 public class Rook extends SliderPiece{
+
+    King myKing;
+    private boolean leftStartingPosition = false;
     public Rook(FigureColor figCol, int posCol, int posRow) {
         super(FigureTypes.ROOK, figCol,posCol,posRow);
+
+        myKing = (King)ChessBoard.board.getTileAt(4,getRow()).getFigureOnThisTile();
+
     }
 
     @Override
@@ -25,6 +31,27 @@ public class Rook extends SliderPiece{
 
         return moves;
     }
+
+    @Override
+    public void moveTo(Tile newTile){
+        tile.removeFigure();
+        newTile.addFigure(this);
+        tile = newTile;
+
+        if(!leftStartingPosition){
+
+            if(getCol() == 7){
+                myKing.disableCastleShort();
+            }
+            else{
+                myKing.disableCastleLong();
+            }
+
+            leftStartingPosition = true;
+        }
+
+    }
+
 
 
 }

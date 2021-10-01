@@ -34,11 +34,16 @@ public class ChessApp extends JFrame{
         JFrame window = new ChessApp();
 
 
+        //add the 2 kings so that the rook can have king pointers
+        ChessBoard.board.addKing(new King(FigureColor.BLACK,4,7));
+        ChessBoard.board.addKing(new King(FigureColor.WHITE,4,0));
 
 
         for(int row = 0; row <= 7; row+= 7) {
 
             FigureColor figCol = (row == 0 ? FigureColor.WHITE : FigureColor.BLACK);
+
+
 
             Rook r1 = new Rook(figCol,0,row);
             Knight k1 = new Knight(figCol,1,row);
@@ -56,8 +61,6 @@ public class ChessApp extends JFrame{
             board.addFigure(k2);
             board.addFigure(r2);
         }
-        ChessBoard.board.addKing(new King(FigureColor.BLACK,4,7));
-        ChessBoard.board.addKing(new King(FigureColor.WHITE,4,0));
 
 
         ChessBoard.board.moveWasMade(); //calculate possible moves
