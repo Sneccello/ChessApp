@@ -1,19 +1,30 @@
 package BoardElements;
 
 import Figures.Figure;
+import Figures.FigureColor;
 import Figures.FigureTypes;
+import Figures.King;
 import Views.ChessBoardView;
 import Views.TileView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class ChessBoard {
     ArrayList<Figure> figures;
+    private final ArrayList<King> kings = new ArrayList<>(2);
     Tile[][] tiles = new Tile[8][8];
 
     public final static ChessBoard board = new ChessBoard();
     private final ChessBoardView chessBoardView;
+
+
+    private final HashMap<Tile, HashSet<Figure>> tilesInCheckForWhite = new HashMap<>();
+    private final HashMap<Tile, HashSet<Figure>> tilesInCheckForBlack = new HashMap<>();
+
+
+
 
     private ChessBoard(){
         figures = new ArrayList<>();
@@ -34,6 +45,38 @@ public class ChessBoard {
         chessBoardView = new ChessBoardView();
         chessBoardView.setTileViews(tileViews);
     }
+
+
+    public void addTilesInCheckForOpponentFrom(Figure checkerFigure, HashSet<Tile> tilesInCheck){
+        //For example a white figure signals that it sees the hashset of tiles. These tiles are in check for the opposite
+        //,black color. So the hashmap where the black "in-check" tiles are stored becomes the MapToWorkWith.In this hashmap
+        //I store the Tile which is in check and also a hashset of figures as values that see that tile.
+        HashMap<Tile, HashSet<Figure>> mapToWorkWith = (checkerFigure.getColor() == FigureColor.WHITE ? tilesInCheckForBlack : tilesInCheckForWhite);
+        for(Tile tile : tilesInCheck){
+            if(mapToWorkWith.containsKey(tile)){
+                mapToWorkWith.get(tile).add(checkerFigure);
+            }
+            else{
+                HashSet<Figure> hs = new HashSet<>();
+                hs.add(checkerFigure);
+                mapToWorkWith.put(tile,hs);
+            }
+        }
+
+    }
+
+
+    public HashMap<Tile,HashSet<Figure>> getTilesInCheckFor(FigureColor color){
+        if(color == FigureColor.WHITE){
+            return tilesInCheckForWhite;
+        }
+        else{
+            return tilesInCheckForBlack;
+        }
+    }
+
+
+
     /*
     example:
     1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8.
@@ -50,7 +93,6 @@ public class ChessBoard {
 
     public void addFigure(Figure f){
         figures.add(f);
-
         chessBoardView.addFigView(f.getView());
     }
 
@@ -59,9 +101,18 @@ public class ChessBoard {
     }
 
     public void moveWasMade(){
+        tilesInCheckForBlack.clear();
+        tilesInCheckForWhite.clear();
+
         for(Figure f: figures){
-            f.calculatePossibleMoves();
+            f.updatePossibleMoves();
         }
+
+
+        for(King k: kings){
+            k.updatePossibleMoves();
+        }
+
     }
 
     public void removeFigure(Figure f){
@@ -69,12 +120,19 @@ public class ChessBoard {
         chessBoardView.removeFigView(f.getView());
     }
 
+
+    public void addKing(King k){
+        kings.add(k);
+        chessBoardView.addFigView(k.getView());
+    }
+
+
     public void printBoard(){
 
 
         HashMap<FigureTypes,Character> dict = new HashMap<>();
         dict.put(FigureTypes.KING,'+');
-        dict.put(FigureTypes.QUEEN,'-');
+        dict.put(FigureTypes.QUEEN,'Q');
         dict.put(FigureTypes.ROOK,'R');
         dict.put(FigureTypes.KNIGHT,'K');
         dict.put(FigureTypes.BISHOP,'B');

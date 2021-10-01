@@ -1,7 +1,10 @@
 package BoardElements;
 
 import Figures.Figure;
+import Figures.FigureColor;
 import Views.TileView;
+
+import java.util.HashSet;
 
 public class Tile {
 
@@ -22,6 +25,9 @@ public class Tile {
 
         observer = new TileView(this);
     }
+
+
+
 
     public TileView getView(){
         return observer;
@@ -49,13 +55,14 @@ public class Tile {
         figureOnThisTile = null;
     }
 
-    public void moveHere(Figure f){
+
+
+
+    public void addFigure(Figure f){
         if(!isEmpty()){
             figureOnThisTile.capture();
         }
-        f.getTile().removeFigure();
         figureOnThisTile = f;
-        figureOnThisTile.setTile(this);
 
     }
 

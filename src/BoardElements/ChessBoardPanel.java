@@ -4,8 +4,10 @@ import Views.ChessBoardView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class ChessBoardPanel extends JPanel {
+public class ChessBoardPanel extends JPanel implements MouseListener {
 
     private final ChessBoardView boardView;
 
@@ -17,6 +19,7 @@ public class ChessBoardPanel extends JPanel {
         this.setVisible(true);
         this.setSize(new Dimension(WIDTH,HEIGHT));
         this.boardView = boardView;
+        this.addMouseListener(this);
     }
 
 
@@ -25,4 +28,30 @@ public class ChessBoardPanel extends JPanel {
         boardView.paint(g);
     }
 
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+        boardView.locateClick(e.getX(),e.getY());
+        repaint();
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
 }

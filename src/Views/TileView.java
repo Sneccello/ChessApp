@@ -13,7 +13,9 @@ public class TileView {
     Tile observedTile;
     public static final int TILE_SIZE = 80;
     private final Color color;
-    private static final Color selectedColor = Color.cyan;
+    private static final Color selectedColor = Color.CYAN;
+    private static final Color darkColor = Color.ORANGE;
+    private static final Color lightColor = Color.WHITE;
 
 
 
@@ -24,7 +26,7 @@ public class TileView {
         observedTile = t;
 
 
-        color = (t.getCol()+t.getRow()) % 2 == 0? Color.BLACK : Color.WHITE;
+        color = (t.getCol()+t.getRow()) % 2 == 0? darkColor : lightColor;
 
         x = observedTile.getCol()* TILE_SIZE;
         y = observedTile.getRow()* TILE_SIZE ;
@@ -54,7 +56,8 @@ public class TileView {
     public void clicked() {
         if (Figure.getSelectedFigure() != null) { //move to an empty tile or capture something
             if(Figure.getSelectedFigure().getPossibleMoves().contains(observedTile)) {
-                observedTile.moveHere(Figure.getSelectedFigure());
+                //observedTile.moveHere(Figure.getSelectedFigure());
+                Figure.getSelectedFigure().moveTo(observedTile);
                 ChessBoard.board.moveWasMade();
             }
             Figure.selectFigure(null); //deselect
@@ -63,7 +66,11 @@ public class TileView {
             observedTile.selectFigureOnThisTile();
 
         }
+    }
 
+
+    public boolean clickIsOnMe(int x, int y){
+        return x > getX() && x< getX() + TileView.TILE_SIZE && y > getY() && y < getY()+TileView.TILE_SIZE;
     }
 
 

@@ -26,8 +26,8 @@ abstract public class Figure {
         view = new FigureView(imageName, this);
 
         tile = ChessBoard.board.getTileAt(posCol,posRow);
-        tile.moveHere(this);
-        ChessBoard.board.addFigure(this);
+        moveTo(tile);
+
     }
 
     public void setTile(Tile t){
@@ -38,8 +38,11 @@ abstract public class Figure {
         return tile;
     }
 
-    public boolean isTheSameColorAs(Figure f){
-        return color == f.color;
+    public boolean isDifferentColorAs(Figure f){
+        if(f == null){
+            return false;
+        }
+        return color != f.color;
     }
 
     public FigureView getView(){
@@ -52,6 +55,10 @@ abstract public class Figure {
 
     public int getRow(){
         return tile.getRow();
+    }
+
+    public FigureColor getColor(){
+        return color;
     }
 
     protected String getStringForColor(FigureColor col){
@@ -86,8 +93,23 @@ abstract public class Figure {
         selectedFigure = f;
     }
 
-    public abstract void calculatePossibleMoves();
-    protected abstract void moveTo(int i, int j );
+    protected abstract HashSet<Tile> calculatePossibleMoves();
+
+    public void updatePossibleMoves(){
+        possibleMoves = calculatePossibleMoves();
+        ChessBoard.board.addTilesInCheckForOpponentFrom(this, possibleMoves);
+    }
+
+
+
+    public void moveTo(Tile newTile){
+        tile.removeFigure();
+        newTile.addFigure(this);
+        tile = newTile;
+    }
+
+
+
 
     public static Figure getSelectedFigure(){
         return selectedFigure;

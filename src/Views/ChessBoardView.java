@@ -35,8 +35,9 @@ public class ChessBoardView{
 
     public void locateClick(int x, int y){
         for(TileView tw : tileViews){
-            if(x > tw.getX() && x< tw.getX() + TileView.TILE_SIZE && y>tw.getY() && y < tw.getY()+TileView.TILE_SIZE){
+            if(tw.clickIsOnMe(x,y)){
                 tw.clicked();
+                break;
             }
         }
     }

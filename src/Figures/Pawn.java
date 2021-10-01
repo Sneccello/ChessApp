@@ -1,20 +1,20 @@
 package Figures;
 
+import BoardElements.Tile;
 import Views.FigureView;
 
+import java.util.HashSet;
+
 public class Pawn extends Figure{
-    Pawn( FigureTypes type, FigureColor figCol,int posCol, int posRow) {
-        super(type, figCol,posCol,posRow);
+    Pawn(FigureColor figCol,int posCol, int posRow) {
+        super(FigureTypes.PAWN, figCol,posCol,posRow);
 
     }
 
     @Override
-    public void calculatePossibleMoves() {
-
+    public HashSet<Tile> calculatePossibleMoves() {
+        return new HashSet<Tile>();
     }
 
-    @Override
-    protected void moveTo(int i, int j) {
 
-    }
 }

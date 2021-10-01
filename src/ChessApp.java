@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-public class ChessApp extends JFrame implements MouseListener {
+public class ChessApp extends JFrame{
 
     JPanel chessFieldPanel;
     JPanel infoPanel;
@@ -22,8 +22,6 @@ public class ChessApp extends JFrame implements MouseListener {
 
         this.setLayout(null);
 
-        addMouseListener(this);
-
         this.pack();
     }
 
@@ -31,63 +29,40 @@ public class ChessApp extends JFrame implements MouseListener {
 
     public static void main(String[] args) {
 
+
+        ChessBoard board = ChessBoard.board;
         JFrame window = new ChessApp();
-        Rook wr1 = new Rook(FigureTypes.ROOK, FigureColor.WHITE,0,0);
-        Rook wr2 = new Rook(FigureTypes.ROOK, FigureColor.WHITE,7,0);
-        Knight wk1 = new Knight(FigureTypes.KNIGHT, FigureColor.WHITE,1,0);
-        Knight wk2 = new Knight(FigureTypes.KNIGHT, FigureColor.WHITE,6,0);
-        Bishop wb1 = new Bishop(FigureTypes.BISHOP, FigureColor.WHITE,2,0);
-        Bishop wb2 = new Bishop(FigureTypes.BISHOP, FigureColor.WHITE,5,0);
-        Queen wq = new Queen(FigureTypes.QUEEN, FigureColor.WHITE,3,0);
-        King wk = new King(FigureTypes.KING,FigureColor.WHITE,4,0);
 
-        Rook br1 = new Rook(FigureTypes.ROOK, FigureColor.BLACK,0,7);
-        Rook br2 = new Rook(FigureTypes.ROOK, FigureColor.BLACK,7,7);
-        Knight bk1 = new Knight(FigureTypes.KNIGHT, FigureColor.BLACK,1,7);
-        Knight bk2 = new Knight(FigureTypes.KNIGHT, FigureColor.BLACK,6,7);
-        Bishop bb1 = new Bishop(FigureTypes.BISHOP, FigureColor.BLACK,2,7);
-        Bishop bb2 = new Bishop(FigureTypes.BISHOP, FigureColor.BLACK,5,7);
-        Queen bq = new Queen(FigureTypes.QUEEN, FigureColor.BLACK,3,7);
-        King bk = new King(FigureTypes.KING,FigureColor.BLACK,4,7);
 
-        ChessBoard.board.moveWasMade();
+
+
+        for(int row = 0; row <= 7; row+= 7) {
+
+            FigureColor figCol = (row == 0 ? FigureColor.WHITE : FigureColor.BLACK);
+
+            Rook r1 = new Rook(figCol,0,row);
+            Knight k1 = new Knight(figCol,1,row);
+            Bishop b1 = new Bishop(figCol,2,row);
+            Queen q = new Queen(figCol,3,row);
+            Bishop b2 = new Bishop(figCol,5,row);
+            Knight k2 = new Knight(figCol,6,row);
+            Rook r2 = new Rook(figCol,7,row);
+
+            board.addFigure(r1);
+            board.addFigure(k1);
+            board.addFigure(b1);
+            board.addFigure(q);
+            board.addFigure(b2);
+            board.addFigure(k2);
+            board.addFigure(r2);
+        }
+        ChessBoard.board.addKing(new King(FigureColor.BLACK,4,7));
+        ChessBoard.board.addKing(new King(FigureColor.WHITE,4,0));
+
+
+        ChessBoard.board.moveWasMade(); //calculate possible moves
         window.repaint();
 
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-        final int screenPanelXStart = 8; //TODO top left corner of screen if not at (0,0) because of the window bar
-        final int screenPanelYStart = 31;//TODO will need something better
-
-
-        int x = e.getX() - screenPanelXStart;
-        int y = e.getY() - screenPanelYStart;
-
-
-
-        ChessBoard.board.getView().locateClick(x,y);
-        repaint();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
 }
