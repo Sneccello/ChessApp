@@ -30,7 +30,7 @@ public class ChessBoardPanel extends JPanel implements MouseListener {
             boardView.paint(g);
         }
         catch(ConcurrentModificationException ex) {//TODO
-            System.err.println(ex.getMessage());
+            System.err.println("ConcurrentModifiactionException: " + ex.getMessage());
         }
     }
 

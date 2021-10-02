@@ -1,10 +1,13 @@
 package Figures;
 
 import BoardElements.ChessBoard;
+import BoardElements.Pin;
 import BoardElements.Tile;
 import Views.FigureView;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 abstract public class Figure {
 
@@ -12,6 +15,8 @@ abstract public class Figure {
     protected FigureColor color;
     protected FigureView view;
     protected HashSet<Tile> possibleMoves ;
+    protected ArrayList<Pin> pins = new ArrayList<>();
+
 
     protected static Figure selectedFigure;
 
@@ -43,6 +48,41 @@ abstract public class Figure {
             return false;
         }
         return color != f.color;
+    }
+
+    public boolean isPinned() {
+        return pins.isEmpty();
+    }
+
+    public void addPin(Pin p){
+        pins.add(p);
+    }
+
+    public void clearPinnerPieces(){
+        pins.clear();
+    }
+
+    public void checkLegalMovesBeingPinned(){
+        if(pins.isEmpty()){
+            return;
+        }
+        if(pins.size() == 1){
+            Iterator<Tile> pinIterator = pins.get(0).getTilesAvailable().iterator();
+            HashSet<Tile> tilesInPinAxis = pins.get(0).getTilesAvailable();
+            HashSet<Tile> mutualSet = new HashSet<>();
+            while(pinIterator.hasNext()){
+                Tile t = pinIterator.next();
+                if(possibleMoves.contains(t)){
+                    mutualSet.add(t);
+                }
+            }
+            possibleMoves.clear();
+            possibleMoves.addAll(mutualSet);
+        }
+        else{
+            possibleMoves.clear();
+        }
+
     }
 
     public FigureView getView(){
@@ -101,6 +141,9 @@ abstract public class Figure {
     }
 
 
+    public void clearPossibleMoves(){
+        possibleMoves.clear();
+    }
 
     public void moveTo(Tile newTile){
         tile.removeFigure();

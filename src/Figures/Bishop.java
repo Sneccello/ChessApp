@@ -17,7 +17,7 @@ public class Bishop extends SliderPiece{
         HashSet<Tile> moves = new HashSet<>();
         for(int i = -1; i <=1; i+=2 ){
             for(int j = -1; j <= 1; j+=2){
-                calculateMovesInDir(getCol(), getRow() , i, j, moves);
+                moves.addAll(getPossibleMovesInDir(getCol(), getRow() , i, j));
             }
         }
         moves.remove(ChessBoard.board.getTileAt(getCol(),getRow()));//moving to where we are is not a move;

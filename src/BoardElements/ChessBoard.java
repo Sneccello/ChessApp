@@ -10,6 +10,7 @@ import Views.TileView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class ChessBoard {
     ArrayList<Figure> figures;
@@ -23,6 +24,7 @@ public class ChessBoard {
     private final HashSet<Tile> illegalTilesForWhiteKing = new HashSet<>();
     private final HashSet<Tile> illegalTilesForBlackKing = new HashSet<>();
 
+    private final LinkedList<Move> moves = new LinkedList<>();
 
 
 
@@ -58,8 +60,12 @@ public class ChessBoard {
     }
 
 
+    public Move getLastMove(){
+        return moves.getLast();
+    }
 
-    /*
+
+    /* TODO
     example:
     1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8.
     Nc3 c6 9. Bg5 b5 10. Nxb5 cxb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7 14.
@@ -83,14 +89,26 @@ public class ChessBoard {
         return tiles[col][row];
     }
 
-    public void moveWasMade(){
+    public void moveWasMade(Move m){
+
+        moves.add(m);
+
         illegalTilesForBlackKing.clear();
         illegalTilesForWhiteKing.clear();
+
+
+        for(Figure f: figures){//reseting pinned flags from previous move
+            f.clearPinnerPieces();
+
+        }
 
         for(Figure f: figures){
             f.updatePossibleMoves();
         }
 
+        for(Figure f : figures){
+            f.checkLegalMovesBeingPinned();
+        }
 
         for(King k: kings){
             k.updatePossibleMoves();

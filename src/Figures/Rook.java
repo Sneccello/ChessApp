@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class Rook extends SliderPiece{
 
-    King myKing;
+    King myKing;//need to store so that castling rights are looked after
     private boolean leftStartingPosition = false;
     public Rook(FigureColor figCol, int posCol, int posRow) {
         super(FigureTypes.ROOK, figCol,posCol,posRow);
@@ -25,7 +25,7 @@ public class Rook extends SliderPiece{
 
         for(int c = 0; c < 4; c++) {
 
-            calculateMovesInDir(tile.getCol(), tile.getRow() , iValues[c] ,jValues[c], moves);
+            moves.addAll(getPossibleMovesInDir(tile.getCol(), tile.getRow() , iValues[c] ,jValues[c]));
         }
         moves.remove(ChessBoard.board.getTileAt(tile.getCol(),tile.getRow()));//moving to where we are is not a move;
 

@@ -36,9 +36,8 @@ public class FigureView {
 
     public void paint(Graphics g){
 
-        int x = observedFig.getCol()* TileView.TILE_SIZE;
-        int y = observedFig.getRow()* TileView.TILE_SIZE;
-
+        int x = observedFig.getTile().getView().getX(); //meh
+        int y = observedFig.getTile().getView().getY();
         g.drawImage(image,x,y,null);
 
     }

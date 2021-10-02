@@ -1,6 +1,7 @@
 package Views;
 
 import BoardElements.ChessBoard;
+import BoardElements.Move;
 import BoardElements.Tile;
 import Figures.Figure;
 
@@ -28,8 +29,10 @@ public class TileView {
 
         color = (t.getCol()+t.getRow()) % 2 == 0? darkColor : lightColor;
 
+        int boardHeight = TILE_SIZE * 8; //
+
         x = observedTile.getCol()* TILE_SIZE;
-        y = observedTile.getRow()* TILE_SIZE ;
+        y = boardHeight - TILE_SIZE - observedTile.getRow()* TILE_SIZE; //a1 should be in the bottom left corner
 
     }
 
@@ -56,9 +59,12 @@ public class TileView {
     public void clicked() {
         if (Figure.getSelectedFigure() != null) { //move to an empty tile or capture something
             if(Figure.getSelectedFigure().getPossibleMoves().contains(observedTile)) {
-                //observedTile.moveHere(Figure.getSelectedFigure());
+
+                Move move = new Move(Figure.getSelectedFigure(), Figure.getSelectedFigure().getTile(), observedTile);
+
                 Figure.getSelectedFigure().moveTo(observedTile);
-                ChessBoard.board.moveWasMade();
+
+                ChessBoard.board.moveWasMade(move);
             }
             Figure.selectFigure(null); //deselect
 

@@ -60,6 +60,14 @@ public class ChessApp extends JFrame{
             board.addFigure(b2);
             board.addFigure(k2);
             board.addFigure(r2);
+
+
+            int pawnRow = (figCol == FigureColor.WHITE ? 1 : 6);
+            for(int i = 0; i < 8; i++){
+                Pawn p = new Pawn(figCol,i, pawnRow);
+                board.addFigure(p);
+            }
+
         }
 
 
