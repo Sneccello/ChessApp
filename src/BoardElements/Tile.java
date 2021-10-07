@@ -1,14 +1,11 @@
 package BoardElements;
 
-import Figures.Figure;
-import Figures.FigureColor;
+import Figures.Piece;
 import Views.TileView;
-
-import java.util.HashSet;
 
 public class Tile {
 
-    private Figure figureOnThisTile = null;
+    private Piece pieceOnThisTile = null;
 
 
     private final int col;
@@ -18,8 +15,8 @@ public class Tile {
 
 
 
-    Tile(Figure f, int col,int row){
-        figureOnThisTile = f;
+    Tile(Piece f, int col, int row){
+        pieceOnThisTile = f;
         this.col = col;
         this.row = row;
 
@@ -33,8 +30,8 @@ public class Tile {
         return observer;
     }
 
-    public Figure getFig(){
-        return figureOnThisTile;
+    public Piece getFig(){
+        return pieceOnThisTile;
     }
 
     public int getCol() {
@@ -47,39 +44,40 @@ public class Tile {
 
 
     public boolean isEmpty(){
-        return figureOnThisTile == null;
+        return pieceOnThisTile == null;
     }
 
 
     public void removeFigure(){
-        figureOnThisTile = null;
+        pieceOnThisTile = null;
     }
 
 
 
 
-    public void addFigure(Figure f){
-        if(!isEmpty()){
-            figureOnThisTile.capture();
-        }
-        figureOnThisTile = f;
+    public void addFigure(Piece f){
+        pieceOnThisTile = f;
 
     }
 
 
-    public void selectFigureOnThisTile(){
-        if(figureOnThisTile != null){
-            Figure.selectFigure(figureOnThisTile);
+    public void trySelectingFigureOnThisTile(){
+        if(pieceOnThisTile != null && pieceOnThisTile.getColor() == ChessBoard.board.colorToMove()){
+            Piece.selectFigure(pieceOnThisTile);
         }
 
     }
 
-    public Figure getFigureOnThisTile(){
-        return figureOnThisTile;
+    public Piece getPieceOnThisTile(){
+        return pieceOnThisTile;
     }
 
     @Override
     public String toString() {
         return colChars[col]+Integer.toString(row+1);
     }
+
+
+
+
 }

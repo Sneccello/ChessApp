@@ -1,20 +1,20 @@
 package BoardElements;
 
-import Figures.Figure;
-import Figures.FigureColor;
-import Figures.FigureTypes;
+import Figures.Piece;
+import Figures.PieceColor;
+import Figures.PieceType;
 import Figures.King;
 import Views.ChessBoardView;
 import Views.TileView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.awt.*;
+import java.util.*;
 
 public class ChessBoard {
-    ArrayList<Figure> figures;
-    private final ArrayList<King> kings = new ArrayList<>(2);
+    //ArrayList<Piece> pieces = new ArrayList<>(32);
+
+    HashMap<PieceColor,Side> sides = new HashMap<>(2);
+
     Tile[][] tiles = new Tile[8][8];
 
     public final static ChessBoard board = new ChessBoard();
@@ -23,13 +23,13 @@ public class ChessBoard {
 
     private final HashSet<Tile> illegalTilesForWhiteKing = new HashSet<>();
     private final HashSet<Tile> illegalTilesForBlackKing = new HashSet<>();
+    private final LinkedHashMap<PieceColor, King> kings = new LinkedHashMap<>();
+
+    private boolean whiteToMove = true;
 
     private final LinkedList<Move> moves = new LinkedList<>();
 
-
-
     private ChessBoard(){
-        figures = new ArrayList<>();
 
         TileView[] tileViews = new TileView[64];
 
@@ -48,15 +48,26 @@ public class ChessBoard {
         chessBoardView.setTileViews(tileViews);
     }
 
-
-    public void addIllegalKingTilesForOpponent(Figure sender, HashSet<Tile> illegalTiles){
-        HashSet<Tile> setToWorkWith = (sender.getColor() == FigureColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
-        setToWorkWith.addAll(illegalTiles);
+    public void addSide(Side s){
+        sides.put(s.getColor(),s);
+        chessBoardView.addSideView(s.getView());
     }
 
 
-    public HashSet<Tile> getIllegalKingMovesFor(FigureColor color){
-        return (color == FigureColor.WHITE ? illegalTilesForWhiteKing : illegalTilesForBlackKing);
+    public void addIllegalKingTilesForOpponent(Piece sender, HashSet<Tile> tiles){
+        HashSet<Tile> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
+        setToWorkWith.addAll(tiles);
+
+    }
+
+    public void addIllegalKingTileForOpponent(Piece sender, Tile t){
+        HashSet<Tile> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
+        setToWorkWith.add(t);
+    }
+
+
+    public HashSet<Tile> getIllegalKingTilesFor(PieceColor color){
+        return (color == PieceColor.WHITE ? illegalTilesForWhiteKing : illegalTilesForBlackKing);
     }
 
 
@@ -75,15 +86,17 @@ public class ChessBoard {
     }
 
 
+    public void registerCheckEnemyKing(Piece sender,HashSet<Tile> possibleBlockingTiles){
+        PieceColor opponentColor =  (sender.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE);
+        kings.get(opponentColor).addCheck(new Check(sender, possibleBlockingTiles));
+    }
+
+
     public ChessBoardView getView(){
         return chessBoardView;
     }
 
-    public void addFigure(Figure f){
-        figures.add(f);
-        chessBoardView.addFigView(f.getView());
 
-    }
 
     public Tile getTileAt(int col, int row){
         return tiles[col][row];
@@ -96,48 +109,81 @@ public class ChessBoard {
         illegalTilesForBlackKing.clear();
         illegalTilesForWhiteKing.clear();
 
+        calculateMoves();
 
-        for(Figure f: figures){//reseting pinned flags from previous move
-            f.clearPinnerPieces();
-
-        }
-
-        for(Figure f: figures){
-            f.updatePossibleMoves();
-        }
-
-        for(Figure f : figures){
-            f.checkLegalMovesBeingPinned();
-        }
-
-        for(King k: kings){
-            k.updatePossibleMoves();
-        }
+        whiteToMove = ! whiteToMove;
 
     }
-
-    public void removeFigure(Figure f){
-        figures.remove(f);
-        chessBoardView.removeFigView(f.getView());
-    }
-
 
     public void addKing(King k){
-        kings.add(k);
-        chessBoardView.addFigView(k.getView());
+        kings.put(k.getColor(),k);
     }
+
+
+    public void calculateMoves(){
+        //checkmate occurs when:
+        //the king has no moves and on other (allied) piece can block for him
+
+        clearPinsAndCheckFromPrevMove();
+
+        sides.get(PieceColor.WHITE).calculateRegularPieceMoves();
+        sides.get(PieceColor.BLACK).calculateRegularPieceMoves();
+
+        sides.get(PieceColor.WHITE).purgeRegularPieceMovesRegardingPins();
+        sides.get(PieceColor.BLACK).purgeRegularPieceMovesRegardingPins();
+
+        for(PieceColor c : kings.keySet()){
+            kings.get(c).banNeighbouringTilesForEnemyKing();
+        }
+        sides.get(PieceColor.WHITE).calculateKingMoves();
+        sides.get(PieceColor.BLACK).calculateKingMoves();
+
+        sides.get(PieceColor.WHITE).limitMovesIfInCheck();
+        sides.get(PieceColor.BLACK).limitMovesIfInCheck();
+
+
+
+
+
+    }
+
+
+    public PieceColor colorToMove(){
+        return whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;
+    }
+
+    private void clearPinsAndCheckFromPrevMove(){
+
+        for(PieceColor c : kings.keySet()){
+            kings.get(c).clearChecks();
+        }
+
+        for(PieceColor c : sides.keySet()){//resetting pinned flags from previous move
+            sides.get(c).clearPins();
+        }
+    }
+
+    public boolean colorWhichIsToMoveIsInCheck(){
+        if(whiteToMove){
+            return kings.get(PieceColor.WHITE).isInCheck();
+        }
+        else{
+            return kings.get(PieceColor.BLACK).isInCheck();
+        }
+    }
+
 
 
     public void printBoard(){
 
 
-        HashMap<FigureTypes,Character> dict = new HashMap<>();
-        dict.put(FigureTypes.KING,'+');
-        dict.put(FigureTypes.QUEEN,'Q');
-        dict.put(FigureTypes.ROOK,'R');
-        dict.put(FigureTypes.KNIGHT,'K');
-        dict.put(FigureTypes.BISHOP,'B');
-        dict.put(FigureTypes.PAWN,'P');
+        HashMap<PieceType,Character> dict = new HashMap<>();
+        dict.put(PieceType.KING,'+');
+        dict.put(PieceType.QUEEN,'Q');
+        dict.put(PieceType.ROOK,'R');
+        dict.put(PieceType.KNIGHT,'K');
+        dict.put(PieceType.BISHOP,'B');
+        dict.put(PieceType.PAWN,'P');
 
 
 

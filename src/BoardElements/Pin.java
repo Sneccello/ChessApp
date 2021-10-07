@@ -1,25 +1,25 @@
 package BoardElements;
 
-import Figures.Figure;
+import Figures.Piece;
 
 import java.util.HashSet;
 
 public class Pin {
 
-    HashSet<Tile> tilesAvailable;
-    Figure pinner;
+    HashSet<Move> movesAvailableInThisPin;
+    Piece pinnerPiece;
 
-    public Pin(HashSet<Tile> tilesInPin, Figure pinnerPiece){
-        this.tilesAvailable = tilesInPin;
-        this.pinner = pinnerPiece;
+    public Pin(HashSet<Move> tileAvailableInThisPin, Piece pinnerPiece){
+        this.movesAvailableInThisPin = tileAvailableInThisPin;
+        this.pinnerPiece = pinnerPiece;
     }
 
-    public HashSet<Tile> getTilesAvailable() {
-        return tilesAvailable;
+    public HashSet<Move> getMovesAvailable() {
+        return movesAvailableInThisPin;
     }
 
-    public Figure getPinner() {
-        return pinner;
+    public Piece getPinnerPiece() {
+        return pinnerPiece;
     }
 
 }

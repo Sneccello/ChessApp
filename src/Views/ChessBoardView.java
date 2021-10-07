@@ -1,6 +1,6 @@
 package Views;
 
-import BoardElements.ChessBoard;
+import BoardElements.Side;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -8,11 +8,11 @@ import java.util.ArrayList;
 public class ChessBoardView{
 
     TileView[]  tileViews;
-    private final ArrayList<FigureView> figViews = new ArrayList<>();
+    private final ArrayList<SideView> sideViews = new ArrayList<>();
 
 
-    public ChessBoardView(){
-
+    public void addSideView(SideView sw){
+        sideViews.add(sw);
     }
 
     public void setTileViews(TileView[] tileViews){
@@ -20,16 +20,12 @@ public class ChessBoardView{
     }
 
 
-    public void addFigView(FigureView fw){
-        figViews.add(fw);
-    }
-
     public void paint(Graphics g){
         for(TileView tw : tileViews) {
             tw.paint(g);
         }
-        for(FigureView fw : figViews){
-            fw.paint(g);
+        for(SideView sw : sideViews){
+            sw.paintSide(g);
         }
     }
 
@@ -40,10 +36,6 @@ public class ChessBoardView{
                 break;
             }
         }
-    }
-
-    public void removeFigView(FigureView fw){
-        figViews.remove(fw);
     }
 
 

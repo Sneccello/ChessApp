@@ -1,15 +1,13 @@
 package Figures;
 
-import BoardElements.ChessBoard;
-import BoardElements.Pin;
-import BoardElements.Tile;
+import BoardElements.*;
 
 import java.util.HashSet;
 
-public abstract class SliderPiece extends Figure{
+public abstract class SliderPiece extends Piece {
 
-    public SliderPiece(FigureTypes figType,FigureColor figCol,int posCol, int posRow) {
-        super(figType, figCol,posCol,posRow);
+    public SliderPiece(PieceType figType, PieceColor figCol, int posCol, int posRow, Side side) {
+        super(figType, figCol,posCol,posRow,side);
     }
 
 
@@ -22,14 +20,18 @@ public abstract class SliderPiece extends Figure{
      * @return a Pin object or null if did not succeed to pin
      */
     protected HashSet<Tile> tryPinningPieceInDir(int posCol, int posRow, int dx, int dy){
-        HashSet<Tile> availableTilesInPin = new HashSet<>();
+        HashSet<Tile> availableMovesInPin = new HashSet<>();
 
-        Tile t = discoverDirection(posCol,posRow,dx,dy, availableTilesInPin);
-        if(t != null && t.getFig().getType() == FigureTypes.KING && t.getFig().isDifferentColorAs(this)){//enemy king found
-            return availableTilesInPin;
+        Tile t = discoverDirection(posCol,posRow,dx,dy, availableMovesInPin);
+        //if t != null then a piece was found in this direction
+        if(t != null && t.getFig().getType() == PieceType.KING && t.getFig().isDifferentColorAs(this)){//enemy king found
+            return availableMovesInPin; //successful pin in this direction
         }
-        return null;
+        return null; //could not pin in this direction
     }
+
+
+
 
     /**
      * gets the possible moves in a direction for a slide rpiece
@@ -41,32 +43,50 @@ public abstract class SliderPiece extends Figure{
      */
     protected HashSet<Tile> getPossibleMovesInDir(int posCol, int posRow, int dx, int dy){
 
-        HashSet<Tile> movesInDir = new HashSet<>();
-        Tile t = discoverDirection(posCol,posRow,dx,dy,movesInDir);
-        if(t != null){//if the last tile in the direction is not a wall
-            //if an enemy piece that is  not the king is found then try to pin it to the king
-            if(t.getFig().isDifferentColorAs(this) && t.getFig().type != FigureTypes.KING){
-                movesInDir.add(t);
-                HashSet<Tile> tilesAvailableForPinnedPiece = tryPinningPieceInDir(t.getCol(),t.getRow(),dx,dy);
-                if(tilesAvailableForPinnedPiece != null){
-                    tilesAvailableForPinnedPiece.addAll(movesInDir);
-                    tilesAvailableForPinnedPiece.add(tile);
+        HashSet<Tile> tilesInDir = new HashSet<>();
+        Tile t = discoverDirection(posCol,posRow,dx,dy,tilesInDir);
+        if(t !=  null){//if the last tile in the direction is not a wall
+
+            //if an enemy piece that is not the king is found then try to pin it to the king
+            if(t.getFig().isDifferentColorAs(this) && t.getFig().type != PieceType.KING){
+
+                tilesInDir.add(t);//we can capture this piece so we can step on that tile
+
+                HashSet<Tile> tilesAvailableForPinnedPiece = tryPinningPieceInDir(t.getCol(),t.getRow(),dx,dy); //and we will try to pin is to the enemy king
+
+                if(tilesAvailableForPinnedPiece != null){ //=successful pin
+                    Piece pinnedPiece = t.getPieceOnThisTile();
+
+                    tilesAvailableForPinnedPiece.addAll(tilesInDir); //we add the tiles between the pinned piece and the current pinner piece as available tiles for the pinned piece
+                    tilesAvailableForPinnedPiece.add(tile); //we add ourselves as possible tiles for the pinned piece. It can capture us, if it can move towards us
+                    // because:
                     // if i pin somebody to the king, then their possible moves will be reduced to
                     // 1: Tiles between the pinned piece and its king
-                    // 2 :Tiles between the pinner and the pinned piece
-                    Pin p = new Pin(tilesAvailableForPinnedPiece, this);
-                    t.getFig().addPin(p);
-                    System.out.println("added pin to " + t.getFig().getTile());
+                    // 2 :Tiles between the pinner and the pinned piece (capture included)
+
+                    //creating pin object for this particular pin
+                    Pin p = new Pin(convertTilesToMoves(t.getFig(), tilesAvailableForPinnedPiece), this);
+                    pinnedPiece.addPin(p);
                 }
             }
-            //if the enemy king is found then look behind it to disable those tiles as legal moves for the enemy king
-            else if(t.getFig().isDifferentColorAs(this) && t.getFig().type == FigureTypes.KING){
-                HashSet<Tile> illegalMovesForEnemyKing = new HashSet<>();
-                Tile tt = discoverDirection(t.getCol(),t.getRow(),dx,dy,illegalMovesForEnemyKing);
-                ChessBoard.board.addIllegalKingTilesForOpponent(this,illegalMovesForEnemyKing);
+            else if( ! t.getFig().isDifferentColorAs(this)){//allied piece, then its protected and cannot be captured by enemy king
+                ChessBoard.board.addIllegalKingTileForOpponent(this,t);
+            }
+            //if the enemy king is found then look behind it to additionally disable those tiles as legal moves for the enemy king
+            //regarding the direction from where this piece sees the enemy king is already added as illegal moves when this function returns
+            else if(t.getFig().isTheEnemyKingFor(this)){
+
+                ChessBoard.board.registerCheckEnemyKing(this,tilesInDir);//first of all register the check
+
+                //make tiles behind the king illegal
+                HashSet<Tile> illegalTilesForEnemyKing = new HashSet<>();
+                Tile unimportantTile = discoverDirection(t.getCol(),t.getRow(),dx,dy,illegalTilesForEnemyKing);
+                //we discard the return value, because we do not care if we cancelled the search because we hit a wall or another piece
+                //the main thing is that the tiles between that and the king should be illegal moves for the king
+                ChessBoard.board.addIllegalKingTilesForOpponent(this,illegalTilesForEnemyKing);
             }
         }
-        return movesInDir;
+        return tilesInDir;
     }
 
 

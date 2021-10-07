@@ -3,10 +3,10 @@ package Views;
 import BoardElements.ChessBoard;
 import BoardElements.Move;
 import BoardElements.Tile;
-import Figures.Figure;
+import Figures.Piece;
 
 import java.awt.*;
-
+import java.util.HashSet;
 
 
 public class TileView {
@@ -31,6 +31,7 @@ public class TileView {
 
         int boardHeight = TILE_SIZE * 8; //
 
+
         x = observedTile.getCol()* TILE_SIZE;
         y = boardHeight - TILE_SIZE - observedTile.getRow()* TILE_SIZE; //a1 should be in the bottom left corner
 
@@ -39,7 +40,7 @@ public class TileView {
 
     public void paint(Graphics g){
 
-        if(Figure.getSelectedFigure()!= null &&  Figure.getSelectedFigure().getPossibleMoves().contains(observedTile)){
+        if(Piece.getSelectedPiece()!= null &&  Piece.getSelectedPiece().canStepTo(observedTile)){
             g.setColor(selectedColor);
         }
         else {
@@ -57,19 +58,27 @@ public class TileView {
     }
 
     public void clicked() {
-        if (Figure.getSelectedFigure() != null) { //move to an empty tile or capture something
-            if(Figure.getSelectedFigure().getPossibleMoves().contains(observedTile)) {
 
-                Move move = new Move(Figure.getSelectedFigure(), Figure.getSelectedFigure().getTile(), observedTile);
+        Piece selectedPiece = Piece.getSelectedPiece();
 
-                Figure.getSelectedFigure().moveTo(observedTile);
+        if (selectedPiece != null) { //move to an empty tile or capture something
 
-                ChessBoard.board.moveWasMade(move);
+            HashSet<Move> moves = selectedPiece.getPossibleMoves();
+
+
+            for(Move move : moves){
+                if(move.getTo() == observedTile){
+                    move.execute();
+                    ChessBoard.board.moveWasMade(move);
+                    break;
+                }
             }
-            Figure.selectFigure(null); //deselect
+
+            Piece.selectFigure(null); //deselect
 
         }else {//select figure
-            observedTile.selectFigureOnThisTile();
+
+            observedTile.trySelectingFigureOnThisTile(); //checks if it the right color to move
 
         }
     }

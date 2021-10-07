@@ -1,6 +1,8 @@
 package Figures;
 
 import BoardElements.ChessBoard;
+import BoardElements.Move;
+import BoardElements.Side;
 import BoardElements.Tile;
 
 import java.util.HashSet;
@@ -9,27 +11,27 @@ public class Rook extends SliderPiece{
 
     King myKing;//need to store so that castling rights are looked after
     private boolean leftStartingPosition = false;
-    public Rook(FigureColor figCol, int posCol, int posRow) {
-        super(FigureTypes.ROOK, figCol,posCol,posRow);
+    public Rook(PieceColor figCol, int posCol, int posRow, King myKing, Side side) {
+        super(PieceType.ROOK, figCol,posCol,posRow,side);
 
-        myKing = (King)ChessBoard.board.getTileAt(4,getRow()).getFigureOnThisTile();
+        this.myKing = myKing;
 
     }
 
     @Override
-    public HashSet<Tile> calculatePossibleMoves() {
-        HashSet<Tile> moves = new HashSet<>();
+    public HashSet<Move> calculatePossibleMoves() {
+        HashSet<Tile> availableTiles = new HashSet<>();
 
         int[] iValues = {0,1,0,-1};
         int[] jValues = {1,0,-1,0};
 
         for(int c = 0; c < 4; c++) {
 
-            moves.addAll(getPossibleMovesInDir(tile.getCol(), tile.getRow() , iValues[c] ,jValues[c]));
+            availableTiles.addAll(getPossibleMovesInDir(tile.getCol(), tile.getRow() , iValues[c] ,jValues[c]));
         }
-        moves.remove(ChessBoard.board.getTileAt(tile.getCol(),tile.getRow()));//moving to where we are is not a move;
+        availableTiles.remove(ChessBoard.board.getTileAt(getCol(),getRow()));//moving to where we are is not a move;
 
-        return moves;
+        return convertTilesToMoves(this,availableTiles);
     }
 
     @Override
