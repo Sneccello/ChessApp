@@ -12,7 +12,7 @@ public class Side {
     private final King king;
     private final SideView sideView = new SideView();
 
-    private int noPossibleMovesInRound;
+    private int numberOfPossibleMoves;
 
     public Side(PieceColor color){
 
@@ -51,6 +51,55 @@ public class Side {
         return color;
     }
 
+    public boolean checkPassedPawn(Pawn enemyPawn){
+        if(color == PieceColor.WHITE){
+            for(Piece p : regularPieces){
+                if(p.getType() == PieceType.PAWN && p.getRow() < enemyPawn.getRow()){
+                    return false;
+                }
+            }
+        }
+        else{
+            for(Piece p : regularPieces){
+                if(p.getType() == PieceType.PAWN && p.getRow() > enemyPawn.getRow()){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public ArrayList<Piece> getRegularPieces(){
+        return regularPieces;
+    }
+
+    public King getKing(){
+        return king;
+    }
+
+    public double evaluateKingTropism(Tile enemyKingTile){
+        double tropism = 0;
+        for(Piece p : regularPieces) {
+            if (p.getType() != PieceType.PAWN) {
+                tropism += p.getBaseValue() / p.euclideanDistanceToTile(enemyKingTile);
+            }
+        }
+
+        return tropism;
+    }
+
+
+
+
+    public int countPawns(){
+        int sum = 0;
+        for(Piece p : regularPieces){
+            if(p.getType() == PieceType.PAWN){
+                sum+=1;
+            }
+        }
+        return sum;
+    }
 
     public void addPiece(Piece p){
         regularPieces.add(p);
@@ -77,17 +126,17 @@ public class Side {
     public void purgeRegularPieceMovesRegardingPins(){
         for(Piece p : regularPieces){
             p.checkLegalMovesBeingPinned();
-            noPossibleMovesInRound += p.getPossibleMoves().size();
+            numberOfPossibleMoves += p.getPossibleMoves().size();
         }
     }
 
-    public int getNoPossibleMovesInRound(){
-        return noPossibleMovesInRound;
+    public int getNumberOfPossibleMoves(){
+        return numberOfPossibleMoves;
     }
 
     public void calculateKingMoves(){
         king.updatePossibleMoves();
-        noPossibleMovesInRound+=king.getPossibleMoves().size();
+        numberOfPossibleMoves +=king.getPossibleMoves().size();
     }
 
     public void clearPins(){
@@ -96,6 +145,57 @@ public class Side {
         }
     }
 
+    public int sumPins(){
+        int sum = 0;
+        for(Piece p : regularPieces){
+            sum += p.countPins();
+        }
+        return sum;
+    }
+
+
+    public int countPawnIslands(){
+        boolean[] pawns = {false,false,false,false,false,false,false,false};
+        for(Piece p : regularPieces){
+            if(p.getType() == PieceType.PAWN){
+                pawns[p.getCol()] = true;
+            }
+        }
+        int islands = 0;
+        boolean currentlySeeingIsland = pawns[0];
+
+        for(int i = 1; i < pawns.length; i++){
+            if( ! pawns[i] && currentlySeeingIsland ){
+                currentlySeeingIsland = false;
+                islands+=1;
+            }
+            else if(pawns[i] && ! currentlySeeingIsland){
+                currentlySeeingIsland = true;
+            }
+            else if(pawns[i] && currentlySeeingIsland){
+                //continue
+            }
+
+        }
+
+        if(pawns[pawns.length-1]){
+            islands++;
+        }
+
+        return islands;
+
+    }
+
+    public HashSet<Tile> getTilesAroundKing(){
+        //TODO
+        return null;
+
+    }
+
+    public double evaluateKingSafety(){
+        HashSet<Tile> tileAroundKing = getTilesAroundKing();
+        return -1; //TODO positive or negative value too
+    }
 
     public void limitMovesIfInCheck(){
 
@@ -111,7 +211,7 @@ public class Side {
             return;
         }
 
-        //if the king is in check but not in double, try blocking the check
+        //if the king is in check but not in double-check, try blocking the check
         Check theCheckToEnd = king.getChecks().get(0);
         HashSet<Tile> targetTilesToEndCheck = theCheckToEnd.getPossibleEndingTiles();
 

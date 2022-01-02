@@ -9,12 +9,56 @@ public class King extends Piece {
 
     private boolean stillCanCastleShort = true;
     private boolean stillCanCastleLong = true;
+    private boolean castled = false;
 
 
     private final LinkedList<Check> checks = new LinkedList<>();
 
     public King(PieceColor figCol, int posCol, int posRow, Side mySide) {
         super(PieceType.KING, figCol,posCol,posRow,mySide);
+    }
+
+    @Override
+    public double getRelativeValue() {
+
+        return calculateSafetyAndActivity();
+    }
+
+    public int countPawnShield(){
+        int rowAheadIdx = getRow() + rowIncrementTowardsCenter;
+        int pawnShield = 0;
+
+        for(int i = -1; i <= 1 ; i++) {
+            int colToCheck = getCol() + i;
+            if (rowAheadIdx > 0 && rowAheadIdx < 8 && colToCheck > 0 && colToCheck < 8) {
+                Tile t1 = ChessBoard.board.getTileAt(getCol(), rowAheadIdx);
+                if( ! t1.isEmpty() && t1.getPieceOnThisTile().getType() == PieceType.PAWN){
+                    pawnShield++;
+                }
+            }
+        }
+        return pawnShield;
+
+    }
+
+    private double calculateSafetyAndActivity(){
+
+        Side mySide = ChessBoard.board.getMySide(this);
+        int nPinnedPiecesToTheKing = mySide.sumPins();
+
+        int nCastleRights = 0;
+        nCastleRights += stillCanCastleShort ? 1 : 0;
+        nCastleRights += stillCanCastleLong ? 1 : 0;
+
+        Side enemySide = ChessBoard.board.getEnemySide(this);
+        double tropism = enemySide.evaluateKingTropism(tile);
+
+        double safety = 0.5 * nCastleRights - 1.0 * nPinnedPiecesToTheKing - 0.8 * tropism;
+        if(castled){//TODO and not in endgame
+            safety += 0.75 * countPawnShield();
+        }
+
+        return safety;
     }
 
     @Override
@@ -152,10 +196,12 @@ public class King extends Piece {
         if(stillCanCastleShort && newTile.getCol() == 6){//short castle
             Tile rookDest = ChessBoard.board.getTileAt(5, getRow());
             ChessBoard.board.getTileAt(7,getRow()).getPieceOnThisTile().moveTo(rookDest);
+            castled = true;
         }
         else if(stillCanCastleLong && newTile.getCol() == 2){ //long castle
             Tile rookDest = ChessBoard.board.getTileAt(3, getRow());
             ChessBoard.board.getTileAt(0,getRow()).getPieceOnThisTile().moveTo(rookDest);
+            castled = true;
         }
 
         tile.removeFigure();

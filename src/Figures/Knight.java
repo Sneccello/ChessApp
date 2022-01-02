@@ -5,6 +5,7 @@ import BoardElements.Move;
 import BoardElements.Side;
 import BoardElements.Tile;
 
+import javax.swing.*;
 import java.util.HashSet;
 
 public class Knight extends Piece {

@@ -4,6 +4,7 @@ import BoardElements.*;
 import Views.PieceView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -14,6 +15,19 @@ abstract public class Piece {
     protected PieceView view;
     protected HashSet<Move> possibleMoves ;
     protected ArrayList<Pin> pins = new ArrayList<>();
+    protected int rowIncrementTowardsCenter;
+
+    protected final static HashMap<PieceType,Double> basePieceValues = new HashMap<>(); //~ 2020, AlphaZero + arbitrary king value
+    static{
+        basePieceValues.put(PieceType.ROOK,5.63);
+        basePieceValues.put(PieceType.PAWN,1.0);
+        basePieceValues.put(PieceType.BISHOP,3.33);
+        basePieceValues.put(PieceType.KNIGHT,3.05);
+        basePieceValues.put(PieceType.QUEEN,9.5);
+        basePieceValues.put(PieceType.KING,3.7);
+
+    }
+    protected double baseValue;
 
 
     protected static Piece selectedPiece;
@@ -32,6 +46,24 @@ abstract public class Piece {
         tile = ChessBoard.board.getTileAt(posCol,posRow);
         tile.addFigure(this);
 
+        baseValue = basePieceValues.get(type);
+
+        rowIncrementTowardsCenter = ( color == PieceColor.WHITE ? 1 : -1 ) ;
+
+    }
+
+    public double getBaseValue() {
+        return baseValue;
+    }
+
+    public double euclideanDistanceToTile(Tile t){
+        double colDiff = t.getCol()-getCol();
+        double rowDiff = t.getRow()-getRow();
+        return Math.sqrt( colDiff*colDiff + rowDiff*rowDiff );
+    }
+
+    public int countPins(){
+        return pins.size();
     }
 
     public void setTile(Tile t){
@@ -42,11 +74,33 @@ abstract public class Piece {
         return tile;
     }
 
-    public boolean isDifferentColorAs(Piece f){
-        if(f == null){
+    protected boolean areSameColorComplex(Tile t1, Tile t2){
+
+        return (t1.getCol()+t1.getRow())%2 == (t2.getCol()+t2.getRow())%2;
+
+    }
+
+
+    protected boolean isProtecting(Tile t){
+        for(Move m : possibleMoves){
+            if(m.getTo() == t){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public boolean isDifferentColorAs(Piece p){
+        if(p == null){
             return false;
         }
-        return color != f.color;
+        return color != p.color;
+    }
+
+    public boolean isSameColorAs(Piece p){
+        return !isDifferentColorAs(p);
     }
 
     public boolean isPinned() {
@@ -61,13 +115,24 @@ abstract public class Piece {
         pins.clear();
     }
 
+    public int evaluatePieceValue(){
+        //int baseValue = getRelativeBaseValue();
+        //int mobilityValue
+        return  -1;
+
+    }
+
+
+    public abstract double getRelativeValue();
+
+
     public void checkLegalMovesBeingPinned(){
         if(pins.isEmpty()){
             return;
         }
         if(pins.size() == 1){
             Iterator<Move> tilesAvailableInPinIterator = pins.get(0).getMovesAvailable().iterator();
-            HashSet<Move> mutualSet = new HashSet<>();//tiles that are legal in respect of the piece own moves and what the pin allows
+            HashSet<Move> mutualSet = new HashSet<>();//tiles that are legal in term of the piece's own moves and what the pin allows
             while(tilesAvailableInPinIterator.hasNext()){
                 Move m = tilesAvailableInPinIterator.next();
 

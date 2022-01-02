@@ -1,9 +1,6 @@
 package BoardElements;
 
-import Figures.Piece;
-import Figures.PieceColor;
-import Figures.PieceType;
-import Figures.King;
+import Figures.*;
 import Views.ChessBoardView;
 import Views.TileView;
 
@@ -53,10 +50,29 @@ public class ChessBoard {
         chessBoardView.addSideView(s.getView());
     }
 
+    public Side getMySide(Piece p){
+        return sides.get(p.getColor());
+    }
+
+    public Side getEnemySide(Piece p) {
+        if (p.getColor() == PieceColor.WHITE) {
+            return sides.get(PieceColor.BLACK);
+        } else {
+            return sides.get(PieceColor.WHITE);
+        }
+    }
 
     public void addIllegalKingTilesForOpponent(Piece sender, HashSet<Tile> tiles){
         HashSet<Tile> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
         setToWorkWith.addAll(tiles);
+
+    }
+
+
+    public boolean checkPassedPawn(Pawn pawn){
+        Side enemySide = pawn.getColor() == PieceColor.WHITE ? sides.get(PieceColor.BLACK) : sides.get(PieceColor.WHITE);
+
+        return enemySide.checkPassedPawn(pawn);
 
     }
 
@@ -100,6 +116,10 @@ public class ChessBoard {
 
     public Tile getTileAt(int col, int row){
         return tiles[col][row];
+    }
+
+    public int getNumberOfPawnsInGame(){
+        return sides.get(PieceColor.WHITE).countPawns() + sides.get(PieceColor.BLACK).countPawns();
     }
 
     public void moveWasMade(Move m){

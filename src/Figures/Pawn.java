@@ -12,16 +12,25 @@ import static BoardElements.ChessBoard.board;
 
 public class Pawn extends Piece {
 
-    int yDir; //where are the pawns are headed. -1 or 1 depending on if the pawn moves increase or decrease the row
     int promotionRowIndex;
     boolean leftStartingTile = false;
 
     public Pawn(PieceColor figCol, int posCol, int posRow, Side side) {
         super(PieceType.PAWN, figCol,posCol,posRow,side);
-        yDir = (color == PieceColor.WHITE ? 1 : -1);
-        promotionRowIndex = Math.max(0,yDir*7);
+        rowIncrementTowardsCenter = (color == PieceColor.WHITE ? 1 : -1);
+        promotionRowIndex = Math.max(0,rowIncrementTowardsCenter*7);
 
     }
+
+    @Override
+    public double getRelativeValue() {
+        int isPassedPawn = board.checkPassedPawn(this) ? 1 : 0;
+        int isBlocked = board.getTileAt(getCol(),getRow()+rowIncrementTowardsCenter).isEmpty() ? 0 : 1;
+
+
+        return baseValue + 0.15 * isPassedPawn - 0.1 * isBlocked;
+    }
+
 
     @Override
     public HashSet<Move> calculatePossibleMoves() {
@@ -55,15 +64,15 @@ public class Pawn extends Piece {
             Move m = ChessBoard.board.getLastMove();
             if(m.getPiece().getType() == PieceType.PAWN){ //if pawn made the last move
                 //if that pawn stepped 2 tiles forward from its starting position
-                if(m.getTo().getRow() == startingRowIdxForEnPassant && m.getFrom().getRow() == startingRowIdxForEnPassant+yDir*2){
+                if(m.getTo().getRow() == startingRowIdxForEnPassant && m.getFrom().getRow() == startingRowIdxForEnPassant+rowIncrementTowardsCenter*2){
                     System.out.println(true);
                     if(getCol()+1 < 8 && m.getFrom().getCol() == getCol()+1){ //if the last move was made on my side (column-wise)
-                        Tile target = ChessBoard.board.getTileAt(getCol()+1,getRow()+yDir);
+                        Tile target = ChessBoard.board.getTileAt(getCol()+1,getRow()+rowIncrementTowardsCenter);
                         moves.add(new Move(this,tile,target, m.getPiece()));
                         System.out.println(true);
                     }
                     else if(getCol()-1 >= 0 && m.getFrom().getCol() == getCol()-1){//if the last move was made on my other side (column-wise)
-                        Tile target = ChessBoard.board.getTileAt(getCol()-1,getRow()+yDir);
+                        Tile target = ChessBoard.board.getTileAt(getCol()-1,getRow()+rowIncrementTowardsCenter);
                         moves.add(new Move(this,tile,target,m.getPiece()));
                     }
                 }
@@ -79,12 +88,12 @@ public class Pawn extends Piece {
         if(amount > 2 || amount < 0){
             return null;
         }
-        int rowAhead = getRow()+amount * yDir;
+        int rowAhead = getRow()+amount * rowIncrementTowardsCenter;
         if(rowAhead >= 0 && rowAhead < 8){
             Tile t = board.getTileAt(getCol(),rowAhead);
             boolean blocked = false;
             for(int i = 1; i <= amount ; i++){//checking if it can step ahead 1 or 2 (<=amount) steps being not blocked
-                if( ! board.getTileAt(getCol(),getRow()+i*yDir).isEmpty()){
+                if( ! board.getTileAt(getCol(),getRow()+i*rowIncrementTowardsCenter).isEmpty()){
                     blocked = true;
                 }
             }
@@ -103,7 +112,7 @@ public class Pawn extends Piece {
 
         //move forward 1 and capture left or right
         int testX = getCol() + xDir;
-        int testY = getRow() + yDir;
+        int testY = getRow() + rowIncrementTowardsCenter;
 
         if(testX >= 0 && testX < 8 && testY >= 0 && testY < 8){
             Tile t = ChessBoard.board.getTileAt(testX,testY);

@@ -32,7 +32,7 @@ public class ChessApp extends JFrame{
         JFrame window = new ChessApp();
 
 
-        //add the 2 kings so that the rook can have king pointers
+        //add the 2 kings so that the rook can have king pointers for castling
 
 
         Side whiteSide = new Side(PieceColor.WHITE);
@@ -45,6 +45,7 @@ public class ChessApp extends JFrame{
 
         ChessBoard.board.calculateMoves(); //calculate possible moves
         window.repaint();
+        //TODO draw by repetition, endgame results and draw after 50moves without pawn moves or captures
 
     }
 
