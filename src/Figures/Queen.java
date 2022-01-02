@@ -14,19 +14,21 @@ public class Queen extends SliderPiece{
     }
 
     @Override
-    public HashSet<Move> calculatePossibleMoves() {
-        HashSet<Tile> availableTiles = new HashSet<>();
+    public double getRelativeValue() {
+        return 0;
+    }
+
+    @Override
+    protected HashSet<Tile> calculateControlledTiles() {
+        HashSet<Tile> controlledTiles = new HashSet<>();
         for(int i = -1; i <=1; i+=1 ){
             for(int j = -1; j <= 1; j+=1) {
                 if (!(i == 0 && j == 0)) {
-                    availableTiles.addAll(getPossibleMovesInDir(getCol(), getRow(), i, j));
+                    controlledTiles.addAll(getControlledTilesInDir(tile, i, j));
                 }
             }
-
         }
-        availableTiles.remove(ChessBoard.board.getTileAt(getCol(),getRow()));//moving to where we are is not a move;
-
-        return convertTilesToMoves(this,availableTiles);
+        return controlledTiles;
     }
 
 

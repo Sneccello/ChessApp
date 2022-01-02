@@ -92,6 +92,8 @@ abstract public class Piece {
 
 
 
+
+
     public boolean isDifferentColorAs(Piece p){
         if(p == null){
             return false;
@@ -100,7 +102,7 @@ abstract public class Piece {
     }
 
     public boolean isSameColorAs(Piece p){
-        return !isDifferentColorAs(p);
+        return p != null && !isDifferentColorAs(p);
     }
 
     public boolean isPinned() {
@@ -209,7 +211,22 @@ abstract public class Piece {
         selectedPiece = f;
     }
 
-    protected abstract HashSet<Move> calculatePossibleMoves();
+    protected abstract HashSet<Tile> calculateControlledTiles();
+
+    protected HashSet<Tile> removeAlliedTiles(HashSet<Tile> tiles){
+        tiles.removeIf(t -> ! t.isEmpty() && t.getPieceOnThisTile().isSameColorAs(this));
+        return tiles;
+    }
+
+    public HashSet<Move> calculatePossibleMoves(){
+
+        HashSet<Tile> controlledTiles = calculateControlledTiles();
+
+        HashSet<Tile> tilesWhereICanMove = removeAlliedTiles(controlledTiles);
+
+        return convertTilesToMoves(this,tilesWhereICanMove);
+    }
+
 
     public void updatePossibleMoves(){
         possibleMoves = calculatePossibleMoves();

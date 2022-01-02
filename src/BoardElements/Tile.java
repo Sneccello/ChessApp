@@ -30,10 +30,6 @@ public class Tile {
         return observer;
     }
 
-    public Piece getFig(){
-        return pieceOnThisTile;
-    }
-
     public int getCol() {
         return col;
     }

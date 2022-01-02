@@ -19,7 +19,13 @@ public class Rook extends SliderPiece{
     }
 
     @Override
-    public HashSet<Move> calculatePossibleMoves() {
+    public double getRelativeValue() {
+        return 0;
+    }
+
+
+    @Override
+    public HashSet<Tile> calculateControlledTiles() {
         HashSet<Tile> availableTiles = new HashSet<>();
 
         int[] iValues = {0,1,0,-1};
@@ -27,11 +33,10 @@ public class Rook extends SliderPiece{
 
         for(int c = 0; c < 4; c++) {
 
-            availableTiles.addAll(getPossibleMovesInDir(tile.getCol(), tile.getRow() , iValues[c] ,jValues[c]));
+            availableTiles.addAll(getControlledTilesInDir(tile , iValues[c] ,jValues[c]));
         }
-        availableTiles.remove(ChessBoard.board.getTileAt(getCol(),getRow()));//moving to where we are is not a move;
 
-        return convertTilesToMoves(this,availableTiles);
+        return availableTiles;
     }
 
     @Override

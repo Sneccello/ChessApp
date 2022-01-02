@@ -18,10 +18,31 @@ public class King extends Piece {
         super(PieceType.KING, figCol,posCol,posRow,mySide);
     }
 
+
     @Override
     public double getRelativeValue() {
 
         return calculateSafetyAndActivity();
+    }
+
+    @Override
+    protected HashSet<Tile> calculateControlledTiles() {
+        HashSet<Tile>  controlledTiles = new HashSet<>();
+
+        for(int i = -1 ; i <=1; i++){
+            for(int j = -1; j <= 1; j++){
+                if( ! (j == 0 && i == 0)) {
+                    int iCandidate = getCol() + i;
+                    int jCandidate = getRow() + j;
+                    if (iCandidate < 8 && iCandidate >= 0 && jCandidate < 8 && jCandidate >= 0) {
+                        Tile t = ChessBoard.board.getTileAt(iCandidate,jCandidate);
+                        controlledTiles.add(t);
+                    }
+                }
+            }
+        }
+
+        return controlledTiles;
     }
 
     public int countPawnShield(){
@@ -30,7 +51,7 @@ public class King extends Piece {
 
         for(int i = -1; i <= 1 ; i++) {
             int colToCheck = getCol() + i;
-            if (rowAheadIdx > 0 && rowAheadIdx < 8 && colToCheck > 0 && colToCheck < 8) {
+            if (rowAheadIdx >= 0 && rowAheadIdx < 8 && colToCheck >= 0 && colToCheck < 8) {
                 Tile t1 = ChessBoard.board.getTileAt(getCol(), rowAheadIdx);
                 if( ! t1.isEmpty() && t1.getPieceOnThisTile().getType() == PieceType.PAWN){
                     pawnShield++;
@@ -63,35 +84,26 @@ public class King extends Piece {
 
     @Override
     public HashSet<Move> calculatePossibleMoves() {
-        HashSet<Tile> availableTiles = new HashSet<>();
 
         HashSet<Tile> illegalTiles = ChessBoard.board.getIllegalKingTilesFor(color);
 
-        for(int i = -1 ; i <=1; i++){ //checking neighbouring tiles
-            for(int j = -1; j <= 1; j++){
-                if( ! (j == 0 && i == 0)) {
-                    int iCandidate = getCol() + i;
-                    int jCandidate = getRow() + j;
-                    if (iCandidate < 8 && iCandidate >= 0 && jCandidate < 8 && jCandidate >= 0) {
-                        Tile t = ChessBoard.board.getTileAt(iCandidate,jCandidate);
-                        if(!illegalTiles.contains(t) && (t.isEmpty() || t.getPieceOnThisTile().isDifferentColorAs(this))) {
-                            availableTiles.add(t);
-                        }
+        HashSet<Tile> controlledTiles = calculateControlledTiles();
 
-                    }
-                }
-            }
-        }
+        controlledTiles.removeIf(illegalTiles::contains);
+
+        HashSet<Tile> possibleTiles = new HashSet<>(controlledTiles);
 
         //checking for castle, adding them to possible moves if can
         if(canCastleShort()){
-            availableTiles.add(ChessBoard.board.getTileAt(getCol()+2, getRow()));
+            possibleTiles.add(ChessBoard.board.getTileAt(getCol()+2, getRow()));
         }
         if(canCastleLong()){
-            availableTiles.add(ChessBoard.board.getTileAt(getCol()-2, getRow()));
+            possibleTiles.add(ChessBoard.board.getTileAt(getCol()-2, getRow()));
         }
 
-        return convertTilesToMoves(this,availableTiles);
+        possibleTiles = removeAlliedTiles(possibleTiles);
+
+        return convertTilesToMoves(this,possibleTiles);
     }
 
     public void banNeighbouringTilesForEnemyKing(){
@@ -107,7 +119,6 @@ public class King extends Piece {
                 }
             }
         }
-
     }
 
 
@@ -115,17 +126,17 @@ public class King extends Piece {
         if(!stillCanCastleShort){
             return false;
         }
-        ChessBoard board = ChessBoard.board;
-        HashSet<Tile> illegalTiles = board.getIllegalKingTilesFor(color);
+
+        HashSet<Tile> illegalTiles = ChessBoard.board.getIllegalKingTilesFor(color);
         boolean canShortCastle = true;
         for(int i = 1; i <=2 ; i++){
-            Tile t = board.getTileAt(getCol()+i, getRow());
+            Tile t = ChessBoard.board.getTileAt(getCol()+i, getRow());
             if(!t.isEmpty() || illegalTiles.contains(t)){
                 canShortCastle = false;
             }
         }
 
-        if(illegalTiles.contains(tile) || illegalTiles.contains(board.getTileAt(getCol()+3,getRow()))){
+        if(illegalTiles.contains(tile) || illegalTiles.contains(ChessBoard.board.getTileAt(getCol()+3,getRow()))){
             canShortCastle = false;
         }
 

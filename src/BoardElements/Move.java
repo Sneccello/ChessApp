@@ -14,7 +14,7 @@ public class Move {
         this.from = from;
         this.to = to;
         this.piece = actor;
-        this.capturedPiece = to.getFig();
+        this.capturedPiece = to.getPieceOnThisTile();
 
     }
 

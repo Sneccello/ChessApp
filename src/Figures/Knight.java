@@ -14,9 +14,16 @@ public class Knight extends Piece {
 
     }
 
+
     @Override
-    public HashSet<Move> calculatePossibleMoves() {
-        HashSet<Tile> availableTiles = new HashSet<>();
+    public double getRelativeValue() {
+        return 0;
+    }
+
+
+
+    protected HashSet<Tile> calculateControlledTiles() {
+        HashSet<Tile> controlledTiles = new HashSet<>();
 
         for(int absRowOffset = 1; absRowOffset <= 2; absRowOffset++) {
             int absColOffset = (absRowOffset == 1 ? 2 : 1);
@@ -30,21 +37,17 @@ public class Knight extends Piece {
 
                     if (candidateCol >= 0 && candidateCol < 8 && candidateRow >= 0 && candidateRow < 8) {
                         Tile candidateTile = ChessBoard.board.getTileAt(candidateCol, candidateRow);
-                        if (candidateTile.isEmpty() || candidateTile.getFig().isDifferentColorAs(this)) {
-                            availableTiles.add(candidateTile);
-                            if(candidateTile.getFig() != null && candidateTile.getFig().isTheEnemyKingFor(this)){
-                                ChessBoard.board.registerCheckEnemyKing(this,null); //knight check cannot be blocked
-                            }
-                        }
-                        else if( ! candidateTile.getFig().isDifferentColorAs(this)){//this tile is protected and the enemy king cannot capture
-                            ChessBoard.board.addIllegalKingTileForOpponent(this,candidateTile);
+
+                        controlledTiles.add(candidateTile);
+                        if( ! candidateTile.isEmpty()  && candidateTile.getPieceOnThisTile().isTheEnemyKingFor(this)){
+                            ChessBoard.board.registerCheckEnemyKing(this,null); //knight check cannot be blocked
                         }
 
                     }
                 }
             }
         }
-        return convertTilesToMoves(this,availableTiles);
+        return controlledTiles;
 
     }
 }

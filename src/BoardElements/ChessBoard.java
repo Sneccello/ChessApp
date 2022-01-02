@@ -140,8 +140,8 @@ public class ChessBoard {
     }
 
 
-    public void calculateMoves(){
-        //checkmate occurs when:
+    public void calculateMoves(){ //TODO should only calculate for one side
+        //TODO checkmate occurs when:
         //the king has no moves and on other (allied) piece can block for him
 
         clearPinsAndCheckFromPrevMove();
@@ -213,7 +213,7 @@ public class ChessBoard {
                     System.out.print(".");
                 }
                 else {
-                    System.out.print(dict.get(board.getTileAt(j,i).getFig().getType()));
+                    System.out.print(dict.get(board.getTileAt(j,i).getPieceOnThisTile().getType()));
                 }
             }
             System.out.print('\n');

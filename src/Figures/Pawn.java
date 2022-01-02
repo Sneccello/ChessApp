@@ -31,32 +31,40 @@ public class Pawn extends Piece {
         return baseValue + 0.15 * isPassedPawn - 0.1 * isBlocked;
     }
 
+    @Override
+    protected HashSet<Tile> calculateControlledTiles() {
+        HashSet<Tile> controlledTiles = new HashSet<>();
+
+        for(int xOffset = -1 ; xOffset <= 1; xOffset+=2){//test capturing forward
+            Tile t = testCaptureForward(xOffset);
+            if(t != null){//this tile is occupied by the enemy
+                controlledTiles.add(t);
+                ChessBoard.board.addIllegalKingTileForOpponent(this,t); //the enemy king cannot step here
+            }
+        }
+
+        return controlledTiles;
+    }
+
 
     @Override
     public HashSet<Move> calculatePossibleMoves() {
-        HashSet<Move> moves = new HashSet<>();
+        HashSet<Tile> possibleTiles = new HashSet<>();
 
 
         for(int step = 1; step <=2 ; step++){ //test moving ahead 1 or 2
             if(step == 1 || !leftStartingTile) {
                 Tile t = testMoveForwardBy(step);
                 if (t != null) {
-                    moves.add(new Move(this,tile,t));
+                    possibleTiles.add(t);
                 }
             }
         }
 
+        HashSet<Tile> controlledTiles = calculateControlledTiles();
+        possibleTiles.addAll(controlledTiles);
 
-        for(int xOffset = -1 ; xOffset <= 1; xOffset+=2){//test capturing forward
-            Tile t = testCaptureForward(xOffset);
-            if(t != null){//this tile is occupied by the enemy
-                moves.add(new Move(this,tile,t));
-                if(t.getFig().isTheEnemyKingFor(this)){
-                    ChessBoard.board.registerCheckEnemyKing(this,null);//pawn check cannot be blocked
-                }
-            }
-        }
-
+        HashSet<Move> possibleMoves = convertTilesToMoves(this,possibleTiles);
 
         //checking en passant
         int startingRowIdxForEnPassant = ( color == PieceColor.WHITE ? 4 : 3);
@@ -65,21 +73,23 @@ public class Pawn extends Piece {
             if(m.getPiece().getType() == PieceType.PAWN){ //if pawn made the last move
                 //if that pawn stepped 2 tiles forward from its starting position
                 if(m.getTo().getRow() == startingRowIdxForEnPassant && m.getFrom().getRow() == startingRowIdxForEnPassant+rowIncrementTowardsCenter*2){
-                    System.out.println(true);
-                    if(getCol()+1 < 8 && m.getFrom().getCol() == getCol()+1){ //if the last move was made on my side (column-wise)
-                        Tile target = ChessBoard.board.getTileAt(getCol()+1,getRow()+rowIncrementTowardsCenter);
-                        moves.add(new Move(this,tile,target, m.getPiece()));
-                        System.out.println(true);
+
+                    if(getCol()+1 < 8 && m.getFrom().getCol() == getCol()+1){ //if the last move was made on one side (column-wise)
+                        Tile targetTile = ChessBoard.board.getTileAt(getCol()+1,getRow()+rowIncrementTowardsCenter);
+                        possibleMoves.add(new Move(this,tile,targetTile, m.getPiece()));
+
                     }
                     else if(getCol()-1 >= 0 && m.getFrom().getCol() == getCol()-1){//if the last move was made on my other side (column-wise)
                         Tile target = ChessBoard.board.getTileAt(getCol()-1,getRow()+rowIncrementTowardsCenter);
-                        moves.add(new Move(this,tile,target,m.getPiece()));
+                        possibleMoves.add(new Move(this,tile,target,m.getPiece()));
                     }
                 }
             }
         }
 
-        return moves;
+        possibleMoves.removeIf(move -> ! move.getTo().isEmpty() && move.getTo().getPieceOnThisTile().isSameColorAs(this));
+
+        return possibleMoves;
     }
 
 
@@ -117,14 +127,10 @@ public class Pawn extends Piece {
         if(testX >= 0 && testX < 8 && testY >= 0 && testY < 8){
             Tile t = ChessBoard.board.getTileAt(testX,testY);
 
-            ChessBoard.board.addIllegalKingTileForOpponent(this,t); //the enemy king cannot step here
-
-            if(! t.isEmpty() && t.getFig().isDifferentColorAs(this)){
+            if(! t.isEmpty() && t.getPieceOnThisTile().isDifferentColorAs(this)){
                 return t;
             }
-            else if( ! t.isEmpty() && ! t.getFig().isDifferentColorAs(this)){//this tile is protected and the enemy king cannot capture
-                ChessBoard.board.addIllegalKingTileForOpponent(this,t);
-            }
+
         }
         return null;
 
