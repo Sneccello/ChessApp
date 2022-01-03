@@ -11,6 +11,7 @@ public class Side {
     ArrayList<Piece> regularPieces = new ArrayList<Piece>(15); //everything but the king
     private final King king;
     private final SideView sideView = new SideView();
+    private Side opponent;
 
     private int numberOfPossibleMoves;
 
@@ -45,6 +46,32 @@ public class Side {
             Pawn p = new Pawn(color,i, pawnRow, this);
             addPiece(p);
         }
+    }
+
+    public double countMaterial(){
+        double sum = 0;
+        for(Piece p : regularPieces){
+            sum += p.getBaseValue();
+        }
+        return sum;
+    }
+
+    public void setOpponent(Side opp){
+        opponent = opp;
+    }
+
+    public Side getOpponent(){
+        return opponent;
+    }
+
+    public HashSet<Tile> getPawnControlledTiles(){
+        HashSet<Tile> controlledSquares = new HashSet<>();
+        for(Piece p : regularPieces){
+            if(p.getType() == PieceType.PAWN){
+                controlledSquares.addAll(  ((Pawn) p).calculateControlledTiles()  );
+            }
+        }
+        return controlledSquares;
     }
 
     public PieceColor getColor(){

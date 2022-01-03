@@ -15,19 +15,17 @@ public class Bishop extends SliderPiece{
     }
 
 
-
-
     @Override
-    public double getRelativeValue() {
+    public double calculateRelativeValue() {
         double startValue = baseValue;
 
         int protectedPieces = 0;
         int blockedByOwnPawns = 0;
         int ownPawnsOnSameColor = 0;
-        int isUnDefended = 1; //boolean value, but will be used in calculations
-        int fianchetto = 0; //boolean value, but will be used in calculations
+        int isUndefended = 1; //boolean value, but will be used in calculations
+
         for(Move m : possibleMoves){
-            if( ! m.getCapturedPiece().isDifferentColorAs(this)){
+            if(m.getCapturedPiece() != null &&  ! m.getCapturedPiece().isDifferentColorAs(this)){
                 protectedPieces += 1;
 
                 if(m.getCapturedPiece().getType() == PieceType.PAWN && getMoveLength(m) == 1){
@@ -45,8 +43,8 @@ public class Bishop extends SliderPiece{
                     ownPawnsOnSameColor += 1;
                 }
             }
-            if(isUnDefended == 1 && p.isProtecting(tile)){
-                isUnDefended = 0;
+            if(isUndefended == 1 && p.isProtecting(tile)){
+                isUndefended = 0;
             }
             if(p.getType() == PieceType.BISHOP && p != this){
                 otherBishopIsAlive = 1;
@@ -55,25 +53,17 @@ public class Bishop extends SliderPiece{
         }
         double alliedPawnsOnSameColorRatio = (double)ownPawnsOnSameColor/numberOfAlliedPawns;
 
-        if(isOnFianchettoSquare()){
-            fianchetto = 1;
-        }
 
         double colorWeakness = Math.abs(0.5-alliedPawnsOnSameColorRatio);
 
-        return startValue + 0.25 * protectedPieces + 1.0 * fianchetto + 0.2 * otherBishopIsAlive
-                        - 0.25 * isUnDefended - 1.5 * colorWeakness - 0.1 * blockedByOwnPawns;
+        relativeValue =  startValue + 0.25 * protectedPieces + 0.2 * otherBishopIsAlive
+                        - 0.25 * isUndefended - 1.5 * colorWeakness - 0.1 * blockedByOwnPawns + pieceSquareTableDB.getTableValue(this);
 
-
-    }
-
-    private boolean isOnFianchettoSquare(){
-
-        int secondRank = color == PieceColor.WHITE ? 1 : 7 ;
-
-        return (getCol() == 1 && getRow() == secondRank) || (getCol() == 7 && getRow() == secondRank);
+        return relativeValue;
 
     }
+
+
 
     private int getMoveLength(Move m){
         Tile to = m.getTo();

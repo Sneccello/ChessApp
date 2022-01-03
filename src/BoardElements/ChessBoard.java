@@ -24,6 +24,7 @@ public class ChessBoard {
 
     private boolean whiteToMove = true;
 
+
     private final LinkedList<Move> moves = new LinkedList<>();
 
     private ChessBoard(){
@@ -62,12 +63,6 @@ public class ChessBoard {
         }
     }
 
-    public void addIllegalKingTilesForOpponent(Piece sender, HashSet<Tile> tiles){
-        HashSet<Tile> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
-        setToWorkWith.addAll(tiles);
-
-    }
-
 
     public boolean checkPassedPawn(Pawn pawn){
         Side enemySide = pawn.getColor() == PieceColor.WHITE ? sides.get(PieceColor.BLACK) : sides.get(PieceColor.WHITE);
@@ -81,6 +76,20 @@ public class ChessBoard {
         setToWorkWith.add(t);
     }
 
+    public boolean inEndGame(){ //lets say 15 or less points of material is left for each side.
+        for(PieceColor pc : sides.keySet()){
+            double materialCount = sides.get(pc).countMaterial();
+            if(materialCount > 15) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public int getMoveCount(){
+        return moves.size();
+    }
 
     public HashSet<Tile> getIllegalKingTilesFor(PieceColor color){
         return (color == PieceColor.WHITE ? illegalTilesForWhiteKing : illegalTilesForBlackKing);
@@ -122,6 +131,17 @@ public class ChessBoard {
         return sides.get(PieceColor.WHITE).countPawns() + sides.get(PieceColor.BLACK).countPawns();
     }
 
+
+    private void refreshRelativeValues(){
+        for(PieceColor pc : sides.keySet()){
+
+            for(Piece p : sides.get(pc).regularPieces){
+                p.calculateRelativeValue();
+            }
+            sides.get(pc).getKing().calculateRelativeValue();
+        }
+    }
+
     public void moveWasMade(Move m){
 
         moves.add(m);
@@ -130,6 +150,7 @@ public class ChessBoard {
         illegalTilesForWhiteKing.clear();
 
         calculateMoves();
+
 
         whiteToMove = ! whiteToMove;
 
@@ -140,7 +161,7 @@ public class ChessBoard {
     }
 
 
-    public void calculateMoves(){ //TODO should only calculate for one side
+    public void calculateMoves(){ //TODO should only calculate for one side tbh
         //TODO checkmate occurs when:
         //the king has no moves and on other (allied) piece can block for him
 
@@ -161,12 +182,23 @@ public class ChessBoard {
         sides.get(PieceColor.WHITE).limitMovesIfInCheck();
         sides.get(PieceColor.BLACK).limitMovesIfInCheck();
 
-
-
-
+        refreshRelativeValues(); //TODO debug, later delete this
 
     }
 
+    public int countPawnsInFile(int fileIdx){
+        int c = 0;
+        for(PieceColor pc : sides.keySet()){
+            Side s = sides.get(pc);
+            for(Piece p : s.getRegularPieces()){
+                if(p.getType() == PieceType.PAWN && p.getCol() == fileIdx){
+                    c++;
+                }
+            }
+        }
+
+        return c;
+    }
 
     public PieceColor colorToMove(){
         return whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;

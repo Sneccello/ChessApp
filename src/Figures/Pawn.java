@@ -23,16 +23,17 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public double getRelativeValue() {
+    public double calculateRelativeValue() {
         int isPassedPawn = board.checkPassedPawn(this) ? 1 : 0;
         int isBlocked = board.getTileAt(getCol(),getRow()+rowIncrementTowardsCenter).isEmpty() ? 0 : 1;
 
 
-        return baseValue + 0.15 * isPassedPawn - 0.1 * isBlocked;
+        relativeValue =  baseValue + 0.15 * isPassedPawn - 0.1 * isBlocked + pieceSquareTableDB.getTableValue(this);
+        return relativeValue;
     }
 
     @Override
-    protected HashSet<Tile> calculateControlledTiles() {
+    public HashSet<Tile> calculateControlledTiles() {
         HashSet<Tile> controlledTiles = new HashSet<>();
 
         for(int xOffset = -1 ; xOffset <= 1; xOffset+=2){//test capturing forward

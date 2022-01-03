@@ -16,11 +16,20 @@ public class Knight extends Piece {
 
 
     @Override
-    public double getRelativeValue() {
-        return 0;
+    public double calculateRelativeValue() {
+        int nPawnsInGame = ChessBoard.board.getNumberOfPawnsInGame();
+        HashSet<Tile> mobilityTiles = calculateControlledTiles();
+        HashSet<Tile> pawnControlledTilesByEnemy = mySide.getOpponent().getPawnControlledTiles();
+
+        mobilityTiles.removeIf(pawnControlledTilesByEnemy::contains);
+
+        int mobility = mobilityTiles.size();
+
+
+        relativeValue =  - 1.0/16 * nPawnsInGame + 0.2 * mobility + pieceSquareTableDB.getTableValue(this);
+
+        return  relativeValue;
     }
-
-
 
     protected HashSet<Tile> calculateControlledTiles() {
         HashSet<Tile> controlledTiles = new HashSet<>();

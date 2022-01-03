@@ -20,9 +20,9 @@ public class King extends Piece {
 
 
     @Override
-    public double getRelativeValue() {
-
-        return calculateSafetyAndActivity();
+    public double calculateRelativeValue() {
+        relativeValue =  calculateSafetyAndActivity() + + pieceSquareTableDB.getTableValue(this);
+        return  relativeValue;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class King extends Piece {
         double tropism = enemySide.evaluateKingTropism(tile);
 
         double safety = 0.5 * nCastleRights - 1.0 * nPinnedPiecesToTheKing - 0.8 * tropism;
-        if(castled){//TODO and not in endgame
+        if(castled && ! ChessBoard.board.inEndGame()){
             safety += 0.75 * countPawnShield();
         }
 

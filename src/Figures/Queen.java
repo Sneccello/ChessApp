@@ -13,9 +13,14 @@ public class Queen extends SliderPiece{
 
     }
 
+
     @Override
-    public double getRelativeValue() {
-        return 0;
+    public double calculateRelativeValue() {
+        int penaltyForEarlyMovement = Math.max(5 - ChessBoard.board.getMoveCount(),0); //penalize for example the first 5 moves
+        int mobility = possibleMoves.size();
+
+        relativeValue =  0.2 * penaltyForEarlyMovement + 1.0/10 * mobility + pieceSquareTableDB.getTableValue(this);
+        return  relativeValue;
     }
 
     @Override

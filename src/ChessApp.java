@@ -35,8 +35,13 @@ public class ChessApp extends JFrame{
         //add the 2 kings so that the rook can have king pointers for castling
 
 
+        //TODO should setup nicer
         Side whiteSide = new Side(PieceColor.WHITE);
         Side blackSide = new Side(PieceColor.BLACK);
+
+        whiteSide.setOpponent(blackSide);
+        blackSide.setOpponent(whiteSide);
+
         board.addSide(whiteSide);
         board.addSide(blackSide);
 

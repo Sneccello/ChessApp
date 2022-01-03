@@ -37,6 +37,13 @@ public class PieceView {
         int y = observedFig.getTile().getView().getY();
         g.drawImage(image,x,y,null);
 
+
+        //TODO only for debug
+
+        g.setColor(Color.BLUE);
+        double value = observedFig.getRelativeValue();
+        g.drawString(String.format("%.2f",value),x + 50,y + 50);
+
     }
 
     public void setSelected(boolean b){

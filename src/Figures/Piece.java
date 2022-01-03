@@ -16,6 +16,8 @@ abstract public class Piece {
     protected HashSet<Move> possibleMoves ;
     protected ArrayList<Pin> pins = new ArrayList<>();
     protected int rowIncrementTowardsCenter;
+    protected double relativeValue;
+
 
     protected final static HashMap<PieceType,Double> basePieceValues = new HashMap<>(); //~ 2020, AlphaZero + arbitrary king value
     static{
@@ -27,6 +29,8 @@ abstract public class Piece {
         basePieceValues.put(PieceType.KING,3.7);
 
     }
+    protected final static PieceSquareTableDB pieceSquareTableDB = new PieceSquareTableDB();
+
     protected double baseValue;
 
 
@@ -117,15 +121,14 @@ abstract public class Piece {
         pins.clear();
     }
 
-    public int evaluatePieceValue(){
-        //int baseValue = getRelativeBaseValue();
-        //int mobilityValue
-        return  -1;
 
+
+
+    public abstract double calculateRelativeValue();
+
+    public double getRelativeValue(){
+        return relativeValue;
     }
-
-
-    public abstract double getRelativeValue();
 
 
     public void checkLegalMovesBeingPinned(){
