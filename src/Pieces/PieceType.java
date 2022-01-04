@@ -1,4 +1,4 @@
-package Figures;
+package Pieces;
 
 public enum PieceType {
     BISHOP,

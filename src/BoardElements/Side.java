@@ -1,6 +1,6 @@
 package BoardElements;
 
-import Figures.*;
+import Pieces.*;
 import Views.SideView;
 
 import java.util.ArrayList;
@@ -64,11 +64,11 @@ public class Side {
         return opponent;
     }
 
-    public HashSet<Tile> getPawnControlledTiles(){
-        HashSet<Tile> controlledSquares = new HashSet<>();
+    public HashSet<Square> getPawnControlledSquares(){
+        HashSet<Square> controlledSquares = new HashSet<>();
         for(Piece p : regularPieces){
             if(p.getType() == PieceType.PAWN){
-                controlledSquares.addAll(  ((Pawn) p).calculateControlledTiles()  );
+                controlledSquares.addAll(  ((Pawn) p).calculateControlledSquares()  );
             }
         }
         return controlledSquares;
@@ -104,11 +104,11 @@ public class Side {
         return king;
     }
 
-    public double evaluateKingTropism(Tile enemyKingTile){
+    public double evaluateKingTropism(Square enemyKingSquare){
         double tropism = 0;
         for(Piece p : regularPieces) {
             if (p.getType() != PieceType.PAWN) {
-                tropism += p.getBaseValue() / p.euclideanDistanceToTile(enemyKingTile);
+                tropism += p.getBaseValue() / p.euclideanDistanceToSquare(enemyKingSquare);
             }
         }
 
@@ -157,8 +157,18 @@ public class Side {
         }
     }
 
+    public HashSet<Move> getPossibleMoves(){
+        HashSet<Move> moves = new HashSet<>();
+        for(Piece p : regularPieces){
+            moves.addAll(p.getPossibleMoves());
+        }
+        moves.addAll(king.getPossibleMoves());
+
+        return moves;
+    }
+
     public int getNumberOfPossibleMoves(){
-        return numberOfPossibleMoves;
+        return getPossibleMoves().size();
     }
 
     public void calculateKingMoves(){
@@ -213,37 +223,28 @@ public class Side {
 
     }
 
-    public HashSet<Tile> getTilesAroundKing(){
-        //TODO
-        return null;
 
-    }
-
-    public double evaluateKingSafety(){
-        HashSet<Tile> tileAroundKing = getTilesAroundKing();
-        return -1; //TODO positive or negative value too
-    }
 
     public void limitMovesIfInCheck(){
+
 
         if( ! king.isInCheck()){
             return;
         }
 
-        HashSet<Tile> possibleCheckEndingTiles = king.getTilesToEndCheck();
-        if(possibleCheckEndingTiles == null){ //the king is in at least a double check so only the king can move
+        HashSet<Square> possibleCheckEndingSquares = king.getSquaresToEndCheck();
+
+        if(possibleCheckEndingSquares.isEmpty()){ //the king is in a double-check or checked by a pawn or a night
             for(Piece p : regularPieces){
                 p.clearPossibleMoves();
             }
             return;
         }
 
-        //if the king is in check but not in double-check, try blocking the check
-        Check theCheckToEnd = king.getChecks().get(0);
-        HashSet<Tile> targetTilesToEndCheck = theCheckToEnd.getPossibleEndingTiles();
+        //if the check is blockable try to block it
 
         for(Piece p :regularPieces){
-            p.limitMovesToEndCheck(targetTilesToEndCheck);
+            p.limitMovesToEndCheck(possibleCheckEndingSquares);
         }
 
     }

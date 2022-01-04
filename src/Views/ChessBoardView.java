@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ChessBoardView{
 
-    TileView[]  tileViews;
+    SquareView[]  SquareViews;
     private final ArrayList<SideView> sideViews = new ArrayList<>();
 
 
@@ -15,13 +15,13 @@ public class ChessBoardView{
         sideViews.add(sw);
     }
 
-    public void setTileViews(TileView[] tileViews){
-        this.tileViews = tileViews;
+    public void setSquareViews(SquareView[] SquareViews){
+        this.SquareViews = SquareViews;
     }
 
 
     public void paint(Graphics g){
-        for(TileView tw : tileViews) {
+        for(SquareView tw : SquareViews) {
             tw.paint(g);
         }
         for(SideView sw : sideViews){
@@ -30,7 +30,7 @@ public class ChessBoardView{
     }
 
     public void locateClick(int x, int y){
-        for(TileView tw : tileViews){
+        for(SquareView tw : SquareViews){
             if(tw.clickIsOnMe(x,y)){
                 tw.clicked();
                 break;

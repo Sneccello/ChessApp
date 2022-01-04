@@ -1,19 +1,18 @@
 package BoardElements;
 
-import Figures.Piece;
+import Pieces.Piece;
 
 import java.util.HashSet;
 
 public class Check {
 
     private final Piece checker;
-    private final HashSet<Tile> possibleEndingTiles = new HashSet<>();
-    Check(Piece checker, HashSet<Tile> possibleBlockingTiles) {
+    private final HashSet<Square> possibleEndingSquares;
+    public Check(Piece checker, HashSet<Square> possibleBlockingSquares) {
         this.checker = checker;
-        if (possibleBlockingTiles != null) {
-            this.possibleEndingTiles.addAll(possibleBlockingTiles);
-        }
-        possibleEndingTiles.add(checker.getTile());
+
+        this.possibleEndingSquares = possibleBlockingSquares;
+        this.possibleEndingSquares.add(checker.getSquare());
     }
 
 
@@ -21,8 +20,8 @@ public class Check {
         return checker;
     }
 
-    public HashSet<Tile> getPossibleEndingTiles() {
-        return possibleEndingTiles;
+    public HashSet<Square> getPossibleEndingSquares() {
+        return possibleEndingSquares;
     }
 
 

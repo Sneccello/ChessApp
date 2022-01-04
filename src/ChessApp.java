@@ -1,7 +1,7 @@
 import BoardElements.ChessBoard;
-import BoardElements.ChessBoardPanel;
+import Views.ChessBoardPanel;
 import BoardElements.Side;
-import Figures.*;
+import Pieces.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +44,9 @@ public class ChessApp extends JFrame{
 
         board.addSide(whiteSide);
         board.addSide(blackSide);
+
+
+
 
 
 

@@ -1,25 +1,28 @@
 package BoardElements;
 
-import Figures.*;
+import Pieces.*;
 import Views.ChessBoardView;
-import Views.TileView;
+import Views.SquareView;
 
-import java.awt.*;
 import java.util.*;
+
+import static Pieces.PieceColor.WHITE;
 
 public class ChessBoard {
     //ArrayList<Piece> pieces = new ArrayList<>(32);
 
     HashMap<PieceColor,Side> sides = new HashMap<>(2);
 
-    Tile[][] tiles = new Tile[8][8];
+
+
+    Square[][] Squares = new Square[8][8];
 
     public final static ChessBoard board = new ChessBoard();
     private final ChessBoardView chessBoardView;
 
 
-    private final HashSet<Tile> illegalTilesForWhiteKing = new HashSet<>();
-    private final HashSet<Tile> illegalTilesForBlackKing = new HashSet<>();
+    private final HashSet<Square> illegalSquaresForWhiteKing = new HashSet<>();
+    private final HashSet<Square> illegalSquaresForBlackKing = new HashSet<>();
     private final LinkedHashMap<PieceColor, King> kings = new LinkedHashMap<>();
 
     private boolean whiteToMove = true;
@@ -29,21 +32,21 @@ public class ChessBoard {
 
     private ChessBoard(){
 
-        TileView[] tileViews = new TileView[64];
+        SquareView[] SquareViews = new SquareView[64];
 
         for(int row = 0; row < 8; row++){
             for(int col = 0; col <  8; col++){
 
-                Tile t = new Tile(null, col, row);
-                tiles[col][row] = t;
+                Square s = new Square(null, col, row);
+                Squares[col][row] = s;
 
                 int idx = col*8+row;
-                tileViews[idx] = t.getView();
+                SquareViews[idx] = s.getView();
             }
         }
 
         chessBoardView = new ChessBoardView();
-        chessBoardView.setTileViews(tileViews);
+        chessBoardView.setSquareViews(SquareViews);
     }
 
     public void addSide(Side s){
@@ -51,29 +54,26 @@ public class ChessBoard {
         chessBoardView.addSideView(s.getView());
     }
 
-    public Side getMySide(Piece p){
-        return sides.get(p.getColor());
-    }
 
-    public Side getEnemySide(Piece p) {
-        if (p.getColor() == PieceColor.WHITE) {
-            return sides.get(PieceColor.BLACK);
-        } else {
-            return sides.get(PieceColor.WHITE);
-        }
-    }
+
 
 
     public boolean checkPassedPawn(Pawn pawn){
-        Side enemySide = pawn.getColor() == PieceColor.WHITE ? sides.get(PieceColor.BLACK) : sides.get(PieceColor.WHITE);
+        Side enemySide = pawn.getColor() == WHITE ? sides.get(PieceColor.BLACK) : sides.get(WHITE);
 
         return enemySide.checkPassedPawn(pawn);
 
     }
 
-    public void addIllegalKingTileForOpponent(Piece sender, Tile t){
-        HashSet<Tile> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalTilesForBlackKing : illegalTilesForWhiteKing);
-        setToWorkWith.add(t);
+//    public void addIllegalKingSquareForOpponent(Piece sender, Square s){
+//        HashSet<Square> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalSquaresForBlackKing : illegalSquaresForWhiteKing);
+//        setToWorkWith.add(s);
+//    }
+
+    public void addIllegalKingSquaresForOpponent(Piece sender,HashSet<Square> Squares){
+        HashSet<Square> setToWorkWith = (sender.getColor() == WHITE ? illegalSquaresForBlackKing : illegalSquaresForWhiteKing);
+        setToWorkWith.addAll(Squares);
+
     }
 
     public boolean inEndGame(){ //lets say 15 or less points of material is left for each side.
@@ -91,8 +91,8 @@ public class ChessBoard {
         return moves.size();
     }
 
-    public HashSet<Tile> getIllegalKingTilesFor(PieceColor color){
-        return (color == PieceColor.WHITE ? illegalTilesForWhiteKing : illegalTilesForBlackKing);
+    public HashSet<Square> getIllegalKingSquaresFor(PieceColor color){
+        return (color == WHITE ? illegalSquaresForWhiteKing : illegalSquaresForBlackKing);
     }
 
 
@@ -111,11 +111,6 @@ public class ChessBoard {
     }
 
 
-    public void registerCheckEnemyKing(Piece sender,HashSet<Tile> possibleBlockingTiles){
-        PieceColor opponentColor =  (sender.getColor() == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE);
-        kings.get(opponentColor).addCheck(new Check(sender, possibleBlockingTiles));
-    }
-
 
     public ChessBoardView getView(){
         return chessBoardView;
@@ -123,18 +118,17 @@ public class ChessBoard {
 
 
 
-    public Tile getTileAt(int col, int row){
-        return tiles[col][row];
+    public Square getSquareAt(int col, int row){
+        return Squares[col][row];
     }
 
     public int getNumberOfPawnsInGame(){
-        return sides.get(PieceColor.WHITE).countPawns() + sides.get(PieceColor.BLACK).countPawns();
+        return sides.get(WHITE).countPawns() + sides.get(PieceColor.BLACK).countPawns();
     }
 
 
     private void refreshRelativeValues(){
         for(PieceColor pc : sides.keySet()){
-
             for(Piece p : sides.get(pc).regularPieces){
                 p.calculateRelativeValue();
             }
@@ -142,16 +136,41 @@ public class ChessBoard {
         }
     }
 
+    private boolean isCheckmate(){
+
+        PieceColor sideToMove = whiteToMove ? WHITE : PieceColor.BLACK;
+        String sideName = whiteToMove ? "WHITE" :  "BLACK" ;
+        System.out.println(sideName + " to move. Possible moves: " + sides.get(sideToMove).getNumberOfPossibleMoves());
+
+        return sides.get(sideToMove).getNumberOfPossibleMoves() == 0;
+    }
+
     public void moveWasMade(Move m){
 
         moves.add(m);
 
-        illegalTilesForBlackKing.clear();
-        illegalTilesForWhiteKing.clear();
+        whiteToMove = ! whiteToMove;
 
         calculateMoves();
 
+        if(isCheckmate()){
+            endGame();
+        }
 
+
+
+    }
+
+
+    public void undoLastMove(){
+        if(moves.isEmpty()){
+            return;
+        }
+
+        Move last = moves.removeLast();
+        last.undo();
+
+        calculateMoves();
         whiteToMove = ! whiteToMove;
 
     }
@@ -160,29 +179,35 @@ public class ChessBoard {
         kings.put(k.getColor(),k);
     }
 
+    private void endGame(){
+        System.out.println((whiteToMove ? "White" : "Black") + " is Checkmated ! " );
+    }
+
 
     public void calculateMoves(){ //TODO should only calculate for one side tbh
         //TODO checkmate occurs when:
         //the king has no moves and on other (allied) piece can block for him
 
-        clearPinsAndCheckFromPrevMove();
+        resetBoard();
 
-        sides.get(PieceColor.WHITE).calculateRegularPieceMoves();
+        sides.get(WHITE).calculateRegularPieceMoves();
         sides.get(PieceColor.BLACK).calculateRegularPieceMoves();
 
-        sides.get(PieceColor.WHITE).purgeRegularPieceMovesRegardingPins();
+
+        sides.get(WHITE).purgeRegularPieceMovesRegardingPins();
         sides.get(PieceColor.BLACK).purgeRegularPieceMovesRegardingPins();
 
-        for(PieceColor c : kings.keySet()){
-            kings.get(c).banNeighbouringTilesForEnemyKing();
-        }
-        sides.get(PieceColor.WHITE).calculateKingMoves();
+//        for(PieceColor c : kings.keySet()){
+//            kings.get(c).banNeighbouringSquaresForEnemyKing(); //TODO seems unnecessary
+//        }
+
+        sides.get(WHITE).calculateKingMoves();
         sides.get(PieceColor.BLACK).calculateKingMoves();
 
-        sides.get(PieceColor.WHITE).limitMovesIfInCheck();
+        sides.get(WHITE).limitMovesIfInCheck();
         sides.get(PieceColor.BLACK).limitMovesIfInCheck();
 
-        refreshRelativeValues(); //TODO debug, later delete this
+        refreshRelativeValues(); //TODO debug, later delete this from here
 
     }
 
@@ -201,10 +226,12 @@ public class ChessBoard {
     }
 
     public PieceColor colorToMove(){
-        return whiteToMove ? PieceColor.WHITE : PieceColor.BLACK;
+        return whiteToMove ? WHITE : PieceColor.BLACK;
     }
 
-    private void clearPinsAndCheckFromPrevMove(){
+    private void resetBoard(){
+
+
 
         for(PieceColor c : kings.keySet()){
             kings.get(c).clearChecks();
@@ -213,15 +240,10 @@ public class ChessBoard {
         for(PieceColor c : sides.keySet()){//resetting pinned flags from previous move
             sides.get(c).clearPins();
         }
-    }
 
-    public boolean colorWhichIsToMoveIsInCheck(){
-        if(whiteToMove){
-            return kings.get(PieceColor.WHITE).isInCheck();
-        }
-        else{
-            return kings.get(PieceColor.BLACK).isInCheck();
-        }
+        illegalSquaresForBlackKing.clear();
+        illegalSquaresForWhiteKing.clear();
+
     }
 
 
@@ -239,13 +261,13 @@ public class ChessBoard {
 
 
 
-        for(int i = 0; i < 8 ; i++){
-            for(int j = 0; j < 8; j++){
-                if(board.getTileAt(j,i).isEmpty()){
+        for(int row = 7; row >= 0 ; row--){
+            for(int col = 0; col < 8; col++){
+                if(board.getSquareAt(col,row).isEmpty()){
                     System.out.print(".");
                 }
                 else {
-                    System.out.print(dict.get(board.getTileAt(j,i).getPieceOnThisTile().getType()));
+                    System.out.print(dict.get(board.getSquareAt(col,row).getPieceOnThisSquare().getType()));
                 }
             }
             System.out.print('\n');

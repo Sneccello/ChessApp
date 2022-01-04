@@ -1,6 +1,7 @@
-package Figures;
+package Pieces;
 
 import BoardElements.*;
+import DataBases.PieceSquareTableDB;
 import Views.PieceView;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ abstract public class Piece {
 
     protected static Piece selectedPiece;
 
-    protected Tile tile;
+    protected Square Square;
     Side mySide;
 
     Piece(PieceType type, PieceColor color, int posCol, int posRow,Side side){
@@ -47,8 +48,8 @@ abstract public class Piece {
         String imageName = getStringForColor(color) + getStringForType(type)+".png";
         view = new PieceView(imageName, this);
 
-        tile = ChessBoard.board.getTileAt(posCol,posRow);
-        tile.addFigure(this);
+        Square = ChessBoard.board.getSquareAt(posCol,posRow);
+        Square.addPiece(this);
 
         baseValue = basePieceValues.get(type);
 
@@ -60,9 +61,9 @@ abstract public class Piece {
         return baseValue;
     }
 
-    public double euclideanDistanceToTile(Tile t){
-        double colDiff = t.getCol()-getCol();
-        double rowDiff = t.getRow()-getRow();
+    public double euclideanDistanceToSquare(Square s){
+        double colDiff = s.getCol()-getCol();
+        double rowDiff = s.getRow()-getRow();
         return Math.sqrt( colDiff*colDiff + rowDiff*rowDiff );
     }
 
@@ -70,24 +71,24 @@ abstract public class Piece {
         return pins.size();
     }
 
-    public void setTile(Tile t){
-        tile = t;
+    public void setSquare(Square s){
+        Square = s;
     }
 
-    public Tile getTile(){
-        return tile;
+    public Square getSquare(){
+        return Square;
     }
 
-    protected boolean areSameColorComplex(Tile t1, Tile t2){
+    protected boolean areSameColorComplex(Square t1, Square t2){
 
         return (t1.getCol()+t1.getRow())%2 == (t2.getCol()+t2.getRow())%2;
 
     }
 
 
-    protected boolean isProtecting(Tile t){
+    protected boolean isProtecting(Square s){
         for(Move m : possibleMoves){
-            if(m.getTo() == t){
+            if(m.getTo() == s){
                 return true;
             }
         }
@@ -136,10 +137,10 @@ abstract public class Piece {
             return;
         }
         if(pins.size() == 1){
-            Iterator<Move> tilesAvailableInPinIterator = pins.get(0).getMovesAvailable().iterator();
-            HashSet<Move> mutualSet = new HashSet<>();//tiles that are legal in term of the piece's own moves and what the pin allows
-            while(tilesAvailableInPinIterator.hasNext()){
-                Move m = tilesAvailableInPinIterator.next();
+            Iterator<Move> SquaresAvailableInPinIterator = pins.get(0).getMovesAvailable().iterator();
+            HashSet<Move> mutualSet = new HashSet<>();//Squares that are legal in term of the piece's own moves and what the pin allows
+            while(SquaresAvailableInPinIterator.hasNext()){
+                Move m = SquaresAvailableInPinIterator.next();
 
                 if(possibleMoves.contains(m)){
                     mutualSet.add(m);
@@ -154,11 +155,20 @@ abstract public class Piece {
 
     }
 
-    public void limitMovesToEndCheck(HashSet<Tile> targetTilesToEndCheck){
+
+    protected boolean isTheEnemyKingForMe(Piece requester, Piece potentialKing){
+        return potentialKing != null && potentialKing.getType() == PieceType.KING && requester.isDifferentColorAs(potentialKing);
+    }
+
+    public Side getSide(){
+        return mySide;
+    }
+
+    public void limitMovesToEndCheck(HashSet<Square> targetSquaresToEndCheck){
         HashSet<Move> bin = new HashSet<>(); //avoid concurrent modification
 
-        for(Move move : possibleMoves){//searching if the piece has a move which's target tile can end the check. The other moves are illegal
-            if( ! targetTilesToEndCheck.contains(move.getTo())){
+        for(Move move : possibleMoves){//searching if the piece has a move which's target Square can end the check. The other moves are illegal
+            if( ! targetSquaresToEndCheck.contains(move.getTo())){
                 bin.add(move);
             }
         }
@@ -171,11 +181,11 @@ abstract public class Piece {
     }
 
     public int getCol(){
-        return tile.getCol();
+        return Square.getCol();
     }
 
     public int getRow(){
-        return tile.getRow();
+        return Square.getRow();
     }
 
     public PieceColor getColor(){
@@ -210,39 +220,48 @@ abstract public class Piece {
         }
     }
 
-    public static void selectFigure(Piece f){
-        selectedPiece = f;
+    public static void selectPiece(Piece p){
+        selectedPiece = p;
     }
 
-    protected abstract HashSet<Tile> calculateControlledTiles();
+    protected abstract HashSet<Square> calculateControlledSquares();
 
-    protected HashSet<Tile> removeAlliedTiles(HashSet<Tile> tiles){
-        tiles.removeIf(t -> ! t.isEmpty() && t.getPieceOnThisTile().isSameColorAs(this));
-        return tiles;
+    protected boolean isValidSquare(int col, int row){
+        return (col < 8 && col >= 0 && row < 8 && row >= 0);
+    }
+
+    /**
+     * drops the Squares where the piece cannot move to because its ally-occupied
+     * @param controlledSquares the Squares that the piece sees
+     * @return filtered Squares
+     */
+    protected HashSet<Square> filterIllegalMovesFromControlledSquares(HashSet<Square> controlledSquares){
+        controlledSquares.removeIf(s -> ! s.isEmpty() && s.getPieceOnThisSquare().isSameColorAs(this));
+        return controlledSquares;
     }
 
     public HashSet<Move> calculatePossibleMoves(){
 
-        HashSet<Tile> controlledTiles = calculateControlledTiles();
+        HashSet<Square> controlledSquares = calculateControlledSquares();
 
-        HashSet<Tile> tilesWhereICanMove = removeAlliedTiles(controlledTiles);
 
-        return convertTilesToMoves(this,tilesWhereICanMove);
+        ChessBoard.board.addIllegalKingSquaresForOpponent(this,controlledSquares);
+
+        HashSet<Square> SquaresWhereICanMove = filterIllegalMovesFromControlledSquares(controlledSquares);
+
+        return convertSquaresToMoves(this,SquaresWhereICanMove);
     }
 
 
     public void updatePossibleMoves(){
         possibleMoves = calculatePossibleMoves();
 
-        for(Move m  : possibleMoves){
-            ChessBoard.board.addIllegalKingTileForOpponent(this, m.getTo());
-        }
     }
 
 
-    public boolean canStepTo(Tile t){
+    public boolean canStepTo(Square s){
         for(Move move : possibleMoves){
-            if(move.getTo() == t){
+            if(move.getTo() == s){
                 return true;
             }
         }
@@ -251,16 +270,12 @@ abstract public class Piece {
     }
 
 
-    public boolean isTheEnemyKingFor(Piece p){
-        return p.isDifferentColorAs(this) && type == PieceType.KING;
-    }
 
-
-    protected HashSet<Move> convertTilesToMoves(Piece p,HashSet<Tile> tiles){
+    protected HashSet<Move> convertSquaresToMoves(Piece p,HashSet<Square> Squares){
 
         HashSet<Move> moves = new HashSet<>();
-        for(Tile t: tiles){
-            moves.add(new Move(p,p.getTile(),t));
+        for(Square t: Squares){
+            moves.add(new Move(p,p.getSquare(),t));
         }
         return moves;
     }
@@ -270,10 +285,10 @@ abstract public class Piece {
         possibleMoves.clear();
     }
 
-    public void moveTo(Tile newTile){
-        tile.removeFigure();
-        newTile.addFigure(this);
-        tile = newTile;
+    public void moveTo(Square newSquare){
+        Square.removePiece();
+        newSquare.addPiece(this);
+        Square = newSquare;
     }
 
 
@@ -295,6 +310,8 @@ abstract public class Piece {
     public PieceType getType(){
         return type;
     }
+
+
 
 
     @Override

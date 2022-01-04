@@ -1,24 +1,24 @@
 package BoardElements;
 
-import Figures.Piece;
+import Pieces.Piece;
 
 public class Move {
 
 
-    private final Tile from;
-    private final Tile to;
+    private final Square from;
+    private final Square to;
     private final Piece piece;
     private final Piece capturedPiece;
 
-    public Move(Piece actor, Tile from, Tile to){
+    public Move(Piece actor, Square from, Square to){
         this.from = from;
         this.to = to;
         this.piece = actor;
-        this.capturedPiece = to.getPieceOnThisTile();
+        this.capturedPiece = to.getPieceOnThisSquare();
 
     }
 
-    public Move(Piece actor,Tile from, Tile to, Piece capturedPiece){
+    public Move(Piece actor,Square from, Square to, Piece capturedPiece){
         this.to = to;
         this.piece = actor;
         this.capturedPiece = capturedPiece;
@@ -30,11 +30,11 @@ public class Move {
     }
 
 
-    public Tile getTo() {
+    public Square getTo() {
         return to;
     }
 
-    public Tile getFrom() {
+    public Square getFrom() {
         return from;
     }
 
@@ -44,13 +44,19 @@ public class Move {
 
 
     public void execute(){
-
-
         piece.moveTo(to);
         if(capturedPiece != null){
             capturedPiece.beCaptured();
         }
+    }
 
+    public void undo(){//TODO enpassant undo wrong placement
+        piece.moveTo(from);
+        if(capturedPiece != null){
+            capturedPiece.moveTo(to);
+            capturedPiece.getSide().addPiece(capturedPiece);
+
+        }
     }
 
 

@@ -1,6 +1,6 @@
 package BoardElements;
 
-import Figures.Piece;
+import Pieces.Piece;
 
 import java.util.HashSet;
 
@@ -9,8 +9,8 @@ public class Pin {
     HashSet<Move> movesAvailableInThisPin;
     Piece pinnerPiece;
 
-    public Pin(HashSet<Move> tileAvailableInThisPin, Piece pinnerPiece){
-        this.movesAvailableInThisPin = tileAvailableInThisPin;
+    public Pin(HashSet<Move> SquareAvailableInThisPin, Piece pinnerPiece){
+        this.movesAvailableInThisPin = SquareAvailableInThisPin;
         this.pinnerPiece = pinnerPiece;
     }
 
