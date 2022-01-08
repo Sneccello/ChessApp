@@ -1,6 +1,7 @@
-package BoardElements;
+package ChessAbstracts;
 
-import Pieces.Piece;
+import BoardElements.Pieces.Piece;
+import ChessAbstracts.Moves.Move;
 
 import java.util.HashSet;
 

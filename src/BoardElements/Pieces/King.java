@@ -1,23 +1,38 @@
-package Pieces;
+package BoardElements.Pieces;
 
 import BoardElements.*;
+import ChessAbstracts.Check;
+import ChessAbstracts.Moves.Castle;
+import ChessAbstracts.Moves.Move;
 
 import java.util.HashSet;
 import java.util.LinkedList;
 
 public class King extends Piece {
 
-    private boolean stillCanCastleShort = true;
-    private boolean stillCanCastleLong = true;
+    private boolean leftStartingPosition = false;
+
     private boolean castled = false;
+    private Rook rookShortSide;
+    private Rook rookLongSide;
 
 
     private final LinkedList<Check> checks = new LinkedList<>();
 
     public King(PieceColor PiececCol, int posCol, int posRow, Side mySide) {
         super(PieceType.KING, PiececCol,posCol,posRow,mySide);
+
     }
 
+    public void setRooks(Rook longSideRook, Rook shortSideRook){
+        rookShortSide = shortSideRook;
+        rookLongSide = longSideRook;
+    }
+
+
+    public void castled(boolean b){
+        castled = castled;
+    }
 
     @Override
     public double calculateRelativeValue() {
@@ -68,11 +83,11 @@ public class King extends Piece {
         int nPinnedPiecesToTheKing = mySide.sumPins();
 
         int nCastleRights = 0;
-        nCastleRights += stillCanCastleShort ? 1 : 0;
-        nCastleRights += stillCanCastleLong ? 1 : 0;
+        nCastleRights += rookShortSide.canCastle() && ! leftStartingPosition ? 1 : 0;
+        nCastleRights += rookLongSide.canCastle() && ! leftStartingPosition ? 1 : 0;
 
 
-        double tropism = mySide.getOpponent().evaluateKingTropism(Square);
+        double tropism = mySide.getOpponent().evaluateKingTropism(square);
 
         double safety = 0.5 * nCastleRights - 1.0 * nPinnedPiecesToTheKing - 0.8 * tropism;
         if(castled && ! ChessBoard.board.inEndGame()){
@@ -95,85 +110,83 @@ public class King extends Piece {
 
         HashSet<Square> possibleSquares = controlledSquares;
 
-        //checking for castle, adding them to possible moves if can
-        if(canCastleShort()){
-            possibleSquares.add(ChessBoard.board.getSquareAt(getCol()+2, getRow()));
-        }
-        if(canCastleLong()){
-            possibleSquares.add(ChessBoard.board.getSquareAt(getCol()-2, getRow()));
-        }
-
         possibleSquares = filterIllegalMovesFromControlledSquares(possibleSquares);
 
-        return convertSquaresToMoves(this,possibleSquares);
+        HashSet<Move> possibleMoves = convertSquaresToMoves(this,possibleSquares);
+
+        //checking for castle, adding them to possible moves if can
+        if(canCastleShort()){
+            possibleMoves.add(new Castle(this,square,ChessBoard.board.getSquareAt(getCol()+2, getRow()), rookShortSide));
+        }
+        //    public Castle(King king, Square from, Square to, Rook rook) {
+        if(canCastleLong()){
+            possibleMoves.add(new Castle(this,square,ChessBoard.board.getSquareAt(getCol()-2, getRow()), rookLongSide));
+        }
+
+
+        return possibleMoves;
     }
 
-//    public void banNeighbouringSquaresForEnemyKing(){
-//        for(int i = -1 ; i <=1; i++) { //get neighbouring Squares
-//            for (int j = -1; j <= 1; j++) {
-//                if (!(j == 0 && i == 0)) {
-//                    int iCandidate = getCol() + i;
-//                    int jCandidate = getRow() + j;
-//                    if (isValidSquare(iCandidate,jCandidate)) {
-//                        Square s = ChessBoard.board.getSquareAt(iCandidate, jCandidate);
-//                        ChessBoard.board.addIllegalKingSquareForOpponent(this,t);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    public void leftStartingSquare(boolean b){
+        leftStartingPosition = b;
+    }
 
 
     private boolean canCastleShort(){
-        if(!stillCanCastleShort){
-            return false;
-        }
-
-        HashSet<Square> illegalSquares = ChessBoard.board.getIllegalKingSquaresFor(color);
-        boolean canShortCastle = true;
-        for(int i = 1; i <=2 ; i++){
-            Square s = ChessBoard.board.getSquareAt(getCol()+i, getRow());
-            if(!s.isEmpty() || illegalSquares.contains(s)){
-                canShortCastle = false;
-            }
-        }
-
-        if(illegalSquares.contains(Square) || illegalSquares.contains(ChessBoard.board.getSquareAt(getCol()+3,getRow()))){
-            canShortCastle = false;
-        }
-
-        return canShortCastle;
-    }
-
-
-
-    public void disableCastleShort(){
-        stillCanCastleShort = false;
-    }
-
-    public void disableCastleLong(){
-        stillCanCastleLong = false;
-    }
-
-    private boolean canCastleLong(){
-        if(!stillCanCastleLong){
+        if( ! rookShortSide.canCastle() || leftStartingPosition){
             return false;
         }
         ChessBoard board = ChessBoard.board;
         HashSet<Square> illegalSquares = board.getIllegalKingSquaresFor(color);
-        boolean canLongCastle = true;
-        for(int i = 1; i <=3 ; i++){
-            Square s = board.getSquareAt(getCol()-i, getRow());
+        boolean castlingIsLegal = true;
+
+        Square castlingTargetSquare = ChessBoard.board.getSquareAt(getCol()+2, getRow());
+
+        int targetDistance = castlingTargetSquare.getCol() - getCol();
+
+        for(int i = 1; i <= targetDistance ; i++){
+            Square s = board.getSquareAt(getCol() + i, getRow());
             if(!s.isEmpty() || illegalSquares.contains(s)){
-                canLongCastle = false;
+                castlingIsLegal = false;
             }
         }
 
-        if(illegalSquares.contains(Square) || illegalSquares.contains(board.getSquareAt(getCol()-4,getRow()))){
-            canLongCastle = false;
+        if(illegalSquares.contains(square)){ //=in check lol
+            castlingIsLegal = false;
         }
 
-        return canLongCastle;
+        System.out.println(castlingIsLegal);
+        return castlingIsLegal;
+    }
+
+
+
+
+
+    private boolean canCastleLong(){
+        if( ! rookLongSide.canCastle() || leftStartingPosition){
+            return false;
+        }
+        ChessBoard board = ChessBoard.board;
+        HashSet<Square> illegalSquares = board.getIllegalKingSquaresFor(color);
+        boolean castlingIsLegal = true;
+
+        Square castlingTargetSquare = ChessBoard.board.getSquareAt(getCol()-2, getRow());
+
+        int targetDistance = getCol() - castlingTargetSquare.getCol();
+
+        for(int i = 1; i <= targetDistance ; i++){
+            Square s = board.getSquareAt(getCol()-i, getRow());
+            if(!s.isEmpty() || illegalSquares.contains(s)){
+                castlingIsLegal = false;
+            }
+        }
+
+        if(illegalSquares.contains(square)){ //=in check lol
+            castlingIsLegal = false;
+        }
+
+        return castlingIsLegal;
     }
 
     public boolean isInCheck(){
@@ -213,22 +226,13 @@ public class King extends Piece {
 
     @Override
     public void moveTo(Square newSquare){
-        if(stillCanCastleShort && newSquare.getCol() == 6){//short castle
-            Square rookDest = ChessBoard.board.getSquareAt(5, getRow());
-            ChessBoard.board.getSquareAt(7,getRow()).getPieceOnThisSquare().moveTo(rookDest);
-            castled = true;
-        }
-        else if(stillCanCastleLong && newSquare.getCol() == 2){ //long castle
-            Square rookDest = ChessBoard.board.getSquareAt(3, getRow());
-            ChessBoard.board.getSquareAt(0,getRow()).getPieceOnThisSquare().moveTo(rookDest);
-            castled = true;
-        }
 
-        Square.removePiece();
+        leftStartingPosition = true;
+
+        square.removePiece();
         newSquare.addPiece(this);
-        Square = newSquare;
-        stillCanCastleShort = false;
-        stillCanCastleLong = false;
+        square = newSquare;
+
     }
 
 }

@@ -1,9 +1,9 @@
 package DataBases;
 
 import BoardElements.ChessBoard;
-import Pieces.Piece;
-import Pieces.PieceColor;
-import Pieces.PieceType;
+import BoardElements.Pieces.Piece;
+import BoardElements.Pieces.PieceColor;
+import BoardElements.Pieces.PieceType;
 
 import java.util.HashMap;
 

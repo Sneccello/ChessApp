@@ -1,6 +1,6 @@
 package Views;
 
-import Pieces.Piece;
+import BoardElements.Pieces.Piece;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

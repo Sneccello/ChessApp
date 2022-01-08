@@ -1,6 +1,7 @@
 package BoardElements;
 
-import Pieces.*;
+import ChessAbstracts.Moves.Move;
+import BoardElements.Pieces.*;
 import Views.SideView;
 
 import java.util.ArrayList;
@@ -31,6 +32,8 @@ public class Side {
         Bishop b2 = new Bishop(color,5,backRankIdx,this);
         Knight k2 = new Knight(color,6,backRankIdx,this);
         Rook r2 = new Rook(color,7,backRankIdx,king,this);
+
+        king.setRooks(r1,r2);
 
         addPiece(r1);
         addPiece(k1);

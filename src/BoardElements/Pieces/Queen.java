@@ -1,4 +1,4 @@
-package Pieces;
+package BoardElements.Pieces;
 
 import BoardElements.ChessBoard;
 import BoardElements.Side;
@@ -28,7 +28,7 @@ public class Queen extends SliderPiece{
         for(int i = -1; i <=1; i+=1 ){
             for(int j = -1; j <= 1; j+=1) {
                 if (!(i == 0 && j == 0)) {
-                    controlledSquares.addAll(getControlledSquaresInDir(Square, i, j));
+                    controlledSquares.addAll(getControlledSquaresInDir(square, i, j));
                 }
             }
         }

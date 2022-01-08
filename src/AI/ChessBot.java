@@ -1,9 +1,10 @@
 package AI;
 
-import BoardElements.Move;
+import BoardElements.ChessBoard;
+import ChessAbstracts.Moves.Move;
 import BoardElements.Side;
 import Control.Player;
-import Pieces.Piece;
+import BoardElements.Pieces.Piece;
 
 import java.util.HashSet;
 
@@ -34,7 +35,6 @@ public class ChessBot implements Player {
             }
         }
 
-        System.out.println(bestMove);
         return bestMove;
 
     }
@@ -46,8 +46,10 @@ public class ChessBot implements Player {
             return evaluateBoard(mySide) - evaluateBoard(opponent);
         }
 
+
         for(Move move : mySide.getPossibleMoves()){
             move.execute();
+            ChessBoard.board.calculateMoves();
             double score  = alphaBetaMin(alpha,beta,depthLeft-1);
             move.undo();
             if(score >= beta){
@@ -69,6 +71,7 @@ public class ChessBot implements Player {
 
         for(Move move : opponent.getPossibleMoves()){
             move.execute();
+            ChessBoard.board.calculateMoves();
             double score  = alphaBetaMax(alpha,beta,depthLeft-1);
             move.undo();
             if(score <= alpha){

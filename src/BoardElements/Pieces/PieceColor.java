@@ -1,4 +1,4 @@
-package Pieces;
+package BoardElements.Pieces;
 
 public enum PieceColor {
     BLACK,

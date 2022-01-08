@@ -1,6 +1,6 @@
-package Pieces;
+package BoardElements.Pieces;
 
-import BoardElements.Move;
+import ChessAbstracts.Moves.Move;
 import BoardElements.Side;
 import BoardElements.Square;
 
@@ -38,11 +38,11 @@ public class Bishop extends SliderPiece{
         for(Piece p : mySide.getRegularPieces()){
             if(p.getType() == PieceType.PAWN){
                 numberOfAlliedPawns+=1;
-                if(areSameColorComplex(Square,p.getSquare())) {
+                if(areSameColorComplex(square,p.getSquare())) {
                     ownPawnsOnSameColor += 1;
                 }
             }
-            if(isUndefended == 1 && p.isProtecting(Square)){
+            if(isUndefended == 1 && p.isProtecting(square)){
                 isUndefended = 0;
             }
             if(p.getType() == PieceType.BISHOP && p != this){
@@ -76,7 +76,7 @@ public class Bishop extends SliderPiece{
         HashSet<Square> controlledSquares = new HashSet<>();
         for(int i = -1; i <=1; i+=2 ){
             for(int j = -1; j <= 1; j+=2){
-                controlledSquares.addAll(getControlledSquaresInDir(Square, i, j));
+                controlledSquares.addAll(getControlledSquaresInDir(square, i, j));
             }
         }
         return controlledSquares;

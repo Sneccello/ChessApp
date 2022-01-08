@@ -1,7 +1,7 @@
 import BoardElements.ChessBoard;
 import Views.ChessBoardPanel;
 import BoardElements.Side;
-import Pieces.*;
+import BoardElements.Pieces.*;
 
 import javax.swing.*;
 import java.awt.*;

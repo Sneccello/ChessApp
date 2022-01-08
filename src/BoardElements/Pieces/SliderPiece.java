@@ -1,6 +1,8 @@
-package Pieces;
+package BoardElements.Pieces;
 
 import BoardElements.*;
+import ChessAbstracts.Check;
+import ChessAbstracts.Pin;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,7 +56,7 @@ public abstract class SliderPiece extends Piece {
                     Piece pinnedPiece = lastFoundSquare.getPieceOnThisSquare();
 
                     SquaresAvailableForPinnedPiece.addAll(controlledSquaresInDir); //we add the Squares between the pinned piece and the current pinner piece as available Squares for the pinned piece
-                    SquaresAvailableForPinnedPiece.add(Square); //we add ourselves as possible Squares for the pinned piece. It can capture us, if it can move towards us
+                    SquaresAvailableForPinnedPiece.add(square); //we add ourselves as possible Squares for the pinned piece. It can capture us, if it can move towards us
 
                     Pin p = new Pin(convertSquaresToMoves(pinnedPiece, SquaresAvailableForPinnedPiece), this);
                     pinnedPiece.addPin(p);

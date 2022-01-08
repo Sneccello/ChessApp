@@ -1,6 +1,6 @@
 package Control;
 
-import BoardElements.Move;
+import ChessAbstracts.Moves.Move;
 
 public interface Player {
 

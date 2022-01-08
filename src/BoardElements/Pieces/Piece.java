@@ -1,6 +1,8 @@
-package Pieces;
+package BoardElements.Pieces;
 
 import BoardElements.*;
+import ChessAbstracts.Moves.Move;
+import ChessAbstracts.Pin;
 import DataBases.PieceSquareTableDB;
 import Views.PieceView;
 
@@ -37,7 +39,7 @@ abstract public class Piece {
 
     protected static Piece selectedPiece;
 
-    protected Square Square;
+    protected Square square;
     Side mySide;
 
     Piece(PieceType type, PieceColor color, int posCol, int posRow,Side side){
@@ -48,8 +50,8 @@ abstract public class Piece {
         String imageName = getStringForColor(color) + getStringForType(type)+".png";
         view = new PieceView(imageName, this);
 
-        Square = ChessBoard.board.getSquareAt(posCol,posRow);
-        Square.addPiece(this);
+        square = ChessBoard.board.getSquareAt(posCol,posRow);
+        square.addPiece(this);
 
         baseValue = basePieceValues.get(type);
 
@@ -72,11 +74,11 @@ abstract public class Piece {
     }
 
     public void setSquare(Square s){
-        Square = s;
+        square = s;
     }
 
     public Square getSquare(){
-        return Square;
+        return square;
     }
 
     protected boolean areSameColorComplex(Square t1, Square t2){
@@ -181,11 +183,11 @@ abstract public class Piece {
     }
 
     public int getCol(){
-        return Square.getCol();
+        return square.getCol();
     }
 
     public int getRow(){
-        return Square.getRow();
+        return square.getRow();
     }
 
     public PieceColor getColor(){
@@ -258,6 +260,12 @@ abstract public class Piece {
 
     }
 
+    public void revive(Square tile){
+        moveTo(tile);
+        mySide.addPiece(this);
+    }
+
+
 
     public boolean canStepTo(Square s){
         for(Move move : possibleMoves){
@@ -286,12 +294,15 @@ abstract public class Piece {
     }
 
     public void moveTo(Square newSquare){
-        Square.removePiece();
+        square.removePiece();
         newSquare.addPiece(this);
-        Square = newSquare;
+        square = newSquare;
     }
 
 
+    public void beCaptured(){
+        mySide.removePiece(this);
+    }
 
 
     public static Piece getSelectedPiece(){
@@ -303,9 +314,6 @@ abstract public class Piece {
     }
 
 
-    public void beCaptured(){
-        mySide.removePiece(this);
-    }
 
     public PieceType getType(){
         return type;

@@ -1,9 +1,9 @@
 package Views;
 
 import BoardElements.ChessBoard;
-import BoardElements.Move;
+import ChessAbstracts.Moves.Move;
 import BoardElements.Square;
-import Pieces.Piece;
+import BoardElements.Pieces.Piece;
 
 import java.awt.*;
 import java.util.HashSet;

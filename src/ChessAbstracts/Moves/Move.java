@@ -1,29 +1,32 @@
-package BoardElements;
+package ChessAbstracts.Moves;
 
-import Pieces.Piece;
+import BoardElements.Square;
+import BoardElements.Pieces.Piece;
 
 public class Move {
 
 
-    private final Square from;
-    private final Square to;
-    private final Piece piece;
-    private final Piece capturedPiece;
+    protected final Square from;
+    protected final Square to;
+    protected final Piece piece;
+    protected final Piece capturedPiece;
 
-    public Move(Piece actor, Square from, Square to){
+    public Move(Piece piece, Square from, Square to){
         this.from = from;
         this.to = to;
-        this.piece = actor;
+        this.piece = piece;
         this.capturedPiece = to.getPieceOnThisSquare();
 
     }
 
-    public Move(Piece actor,Square from, Square to, Piece capturedPiece){
+    //TODO reset king and rook flags for example castling
+    public Move(Piece piece,Square from, Square to, Piece capturedPiece){
         this.to = to;
-        this.piece = actor;
+        this.piece = piece;
         this.capturedPiece = capturedPiece;
         this.from = from;
     }
+
 
     public Piece getCapturedPiece(){
         return capturedPiece;
@@ -50,13 +53,13 @@ public class Move {
         }
     }
 
-    public void undo(){//TODO enpassant undo wrong placement
+    public void undo(){
         piece.moveTo(from);
-        if(capturedPiece != null){
-            capturedPiece.moveTo(to);
-            capturedPiece.getSide().addPiece(capturedPiece);
 
+        if(capturedPiece != null){ //TODO refactor new class NullPiece
+            capturedPiece.revive(to);
         }
+
     }
 
 

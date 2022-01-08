@@ -1,4 +1,4 @@
-package Pieces;
+package BoardElements.Pieces;
 
 import BoardElements.ChessBoard;
 import BoardElements.Side;
@@ -8,8 +8,13 @@ import java.util.HashSet;
 
 public class Rook extends SliderPiece{
 
+
+
     King myKing;//need to store so that castling rights are looked after
     private boolean leftStartingPosition = false;
+
+
+
     public Rook(PieceColor PiececCol, int posCol, int posRow, King myKing, Side side) {
         super(PieceType.ROOK, PiececCol, posCol, posRow, side);
 
@@ -27,6 +32,10 @@ public class Rook extends SliderPiece{
         return null;
     }
 
+    public void leftStartingSquare(boolean b){
+        leftStartingPosition = b;
+    }
+
     @Override
     public double calculateRelativeValue() {
         int nPawnsInGame = ChessBoard.board.getNumberOfPawnsInGame();
@@ -34,7 +43,7 @@ public class Rook extends SliderPiece{
         int pawnsInFile = ChessBoard.board.countPawnsInFile(getCol());
         Rook otherRook = getOtherRook();
         int protectionByOtherRook = 0;
-        if(otherRook != null && calculateControlledSquares().contains(otherRook.Square)){
+        if(otherRook != null && calculateControlledSquares().contains(otherRook.square)){
             protectionByOtherRook = 1;
         }
         int seventhRankPositionValue = (seventhRankIdx == getRow() ? 1 : 0);
@@ -57,27 +66,23 @@ public class Rook extends SliderPiece{
 
         for(int c = 0; c < 4; c++) {
 
-            availableSquares.addAll(getControlledSquaresInDir(Square , iValues[c] ,jValues[c]));
+            availableSquares.addAll(getControlledSquaresInDir(square , iValues[c] ,jValues[c]));
         }
 
         return availableSquares;
     }
 
+    public boolean canCastle(){
+        return ! leftStartingPosition;
+    }
+
     @Override
     public void moveTo(Square newSquare){
-        Square.removePiece();
+        square.removePiece();
         newSquare.addPiece(this);
-        Square = newSquare;
+        square = newSquare;
 
         if(!leftStartingPosition){
-
-            if(getCol() == 7){
-                myKing.disableCastleShort();
-            }
-            else{
-                myKing.disableCastleLong();
-            }
-
             leftStartingPosition = true;
         }
 

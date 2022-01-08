@@ -1,12 +1,15 @@
 package BoardElements;
 
-import Pieces.*;
+import AI.ChessBot;
+import ChessAbstracts.Moves.Move;
+import BoardElements.Pieces.*;
 import Views.ChessBoardView;
 import Views.SquareView;
 
 import java.util.*;
 
-import static Pieces.PieceColor.WHITE;
+import static BoardElements.Pieces.PieceColor.BLACK;
+import static BoardElements.Pieces.PieceColor.WHITE;
 
 public class ChessBoard {
     //ArrayList<Piece> pieces = new ArrayList<>(32);
@@ -145,22 +148,27 @@ public class ChessBoard {
         return sides.get(sideToMove).getNumberOfPossibleMoves() == 0;
     }
 
+
+
     public void moveWasMade(Move m){
 
         moves.add(m);
 
         whiteToMove = ! whiteToMove;
 
+
+        ChessBot bot = new ChessBot(sides.get(BLACK));
+        if(! whiteToMove){
+            //System.out.println(bot.getBestMove());
+
+        }
+
         calculateMoves();
 
         if(isCheckmate()){
             endGame();
         }
-
-
-
     }
-
 
     public void undoLastMove(){
         if(moves.isEmpty()){
