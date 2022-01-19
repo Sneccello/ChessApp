@@ -3,20 +3,23 @@ package BoardElements.Pieces;
 import BoardElements.ChessBoard;
 import BoardElements.Side;
 import BoardElements.Square;
+import ChessAbstracts.BinaryFlag;
+import ChessAbstracts.CastlingPiece;
+import ChessAbstracts.Moves.Move;
 
 import java.util.HashSet;
 
-public class Rook extends SliderPiece{
+public class Rook extends SliderPiece implements CastlingPiece {
 
 
 
     King myKing;//need to store so that castling rights are looked after
-    private boolean leftStartingPosition = false;
+    private BinaryFlag leftStartingSquareFlag = new BinaryFlag(false);
 
 
 
-    public Rook(PieceColor PiececCol, int posCol, int posRow, King myKing, Side side) {
-        super(PieceType.ROOK, PiececCol, posCol, posRow, side);
+    public Rook(PieceColor PieceCol, int posCol, int posRow, King myKing, Side side) {
+        super(PieceType.ROOK, PieceCol, posCol, posRow, side);
 
         this.myKing = myKing;
 
@@ -32,8 +35,8 @@ public class Rook extends SliderPiece{
         return null;
     }
 
-    public void leftStartingSquare(boolean b){
-        leftStartingPosition = b;
+    public void setLeftStartingSquare(boolean b){
+        leftStartingSquareFlag.setValue(b);
     }
 
     @Override
@@ -72,8 +75,15 @@ public class Rook extends SliderPiece{
         return availableSquares;
     }
 
-    public boolean canCastle(){
-        return ! leftStartingPosition;
+    public boolean hasLeftStartingSquare(){
+        return leftStartingSquareFlag.value();
+    }
+
+
+
+    @Override
+    public BinaryFlag getLeftStartingSquareFlag() {
+        return leftStartingSquareFlag;
     }
 
     @Override
@@ -82,12 +92,25 @@ public class Rook extends SliderPiece{
         newSquare.addPiece(this);
         square = newSquare;
 
-        if(!leftStartingPosition){
-            leftStartingPosition = true;
+        if( ! hasLeftStartingSquare() ){
+            leftStartingSquareFlag.setValue(true);
         }
 
     }
 
+    @Override
+    public HashSet<Move> calculatePossibleMoves(){
+
+        HashSet<Move> moves = super.calculatePossibleMoves();
+
+        if( ! hasLeftStartingSquare() ){
+            for(Move m :  moves){
+                m.addFlagToResetWhenUndone(leftStartingSquareFlag);
+            }
+        }
+
+        return moves;
+    }
 
 
 }

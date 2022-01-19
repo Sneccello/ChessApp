@@ -1,6 +1,8 @@
 package BoardElements.Pieces;
 
 import BoardElements.*;
+import ChessAbstracts.BinaryFlag;
+import ChessAbstracts.CastlingPiece;
 import ChessAbstracts.Check;
 import ChessAbstracts.Moves.Castle;
 import ChessAbstracts.Moves.Move;
@@ -8,11 +10,11 @@ import ChessAbstracts.Moves.Move;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-public class King extends Piece {
+public class King extends Piece implements CastlingPiece {
 
-    private boolean leftStartingPosition = false;
+    private BinaryFlag leftStartingPositionFlag = new BinaryFlag(false);
 
-    private boolean castled = false;
+    private BinaryFlag castled = new BinaryFlag(false);
     private Rook rookShortSide;
     private Rook rookLongSide;
 
@@ -31,7 +33,7 @@ public class King extends Piece {
 
 
     public void castled(boolean b){
-        castled = castled;
+        castled.setValue(b);
     }
 
     @Override
@@ -77,20 +79,22 @@ public class King extends Piece {
 
     }
 
+
+
     private double calculateSafetyAndActivity(){
 
 
         int nPinnedPiecesToTheKing = mySide.sumPins();
 
         int nCastleRights = 0;
-        nCastleRights += rookShortSide.canCastle() && ! leftStartingPosition ? 1 : 0;
-        nCastleRights += rookLongSide.canCastle() && ! leftStartingPosition ? 1 : 0;
+        nCastleRights += ! rookShortSide.hasLeftStartingSquare() && ! hasLeftStartingSquare() ? 1 : 0;
+        nCastleRights += ! rookLongSide.hasLeftStartingSquare() && ! hasLeftStartingSquare() ? 1 : 0;
 
 
         double tropism = mySide.getOpponent().evaluateKingTropism(square);
 
         double safety = 0.5 * nCastleRights - 1.0 * nPinnedPiecesToTheKing - 0.8 * tropism;
-        if(castled && ! ChessBoard.board.inEndGame()){
+        if(castled.value() && ! ChessBoard.board.inEndGame()){
             safety += 0.75 * countPawnShield();
         }
 
@@ -101,6 +105,7 @@ public class King extends Piece {
     public HashSet<Move> calculatePossibleMoves() {
 
         HashSet<Square> illegalSquares = ChessBoard.board.getIllegalKingSquaresFor(color);
+
 
 
         HashSet<Square> controlledSquares = calculateControlledSquares();
@@ -115,25 +120,45 @@ public class King extends Piece {
         HashSet<Move> possibleMoves = convertSquaresToMoves(this,possibleSquares);
 
         //checking for castle, adding them to possible moves if can
+
+
         if(canCastleShort()){
-            possibleMoves.add(new Castle(this,square,ChessBoard.board.getSquareAt(getCol()+2, getRow()), rookShortSide));
-        }
-        //    public Castle(King king, Square from, Square to, Rook rook) {
-        if(canCastleLong()){
-            possibleMoves.add(new Castle(this,square,ChessBoard.board.getSquareAt(getCol()-2, getRow()), rookLongSide));
+            Castle castle = new Castle(this,square,ChessBoard.board.getSquareAt(getCol()+2, getRow()), rookShortSide);
+            castle.addFlagToResetWhenUndone(castled);
+            castle.addFlagToResetWhenUndone(leftStartingPositionFlag);
+            castle.addFlagToResetWhenUndone(rookShortSide.getLeftStartingSquareFlag());
+
+            possibleMoves.add(castle);
         }
 
+        if(canCastleLong()){
+            Castle castle = new Castle(this,square,ChessBoard.board.getSquareAt(getCol()-2, getRow()), rookLongSide);
+            castle.addFlagToResetWhenUndone(castled);
+            castle.addFlagToResetWhenUndone(leftStartingPositionFlag);
+            castle.addFlagToResetWhenUndone(rookLongSide.getLeftStartingSquareFlag());
+
+            possibleMoves.add(castle);
+        }
 
         return possibleMoves;
     }
 
-    public void leftStartingSquare(boolean b){
-        leftStartingPosition = b;
+
+    public boolean hasLeftStartingSquare(){
+        return leftStartingPositionFlag.value();
     }
 
+    public void setLeftStartingSquareFlag(boolean b){
+        leftStartingPositionFlag.setValue(b);
+    }
+
+    @Override
+    public BinaryFlag getLeftStartingSquareFlag() {
+        return leftStartingPositionFlag;
+    }
 
     private boolean canCastleShort(){
-        if( ! rookShortSide.canCastle() || leftStartingPosition){
+        if( rookShortSide.hasLeftStartingSquare() || hasLeftStartingSquare()){
             return false;
         }
         ChessBoard board = ChessBoard.board;
@@ -155,7 +180,7 @@ public class King extends Piece {
             castlingIsLegal = false;
         }
 
-        System.out.println(castlingIsLegal);
+
         return castlingIsLegal;
     }
 
@@ -164,7 +189,7 @@ public class King extends Piece {
 
 
     private boolean canCastleLong(){
-        if( ! rookLongSide.canCastle() || leftStartingPosition){
+        if( rookLongSide.hasLeftStartingSquare() || hasLeftStartingSquare()){
             return false;
         }
         ChessBoard board = ChessBoard.board;
@@ -227,7 +252,7 @@ public class King extends Piece {
     @Override
     public void moveTo(Square newSquare){
 
-        leftStartingPosition = true;
+        leftStartingPositionFlag.setValue(true);
 
         square.removePiece();
         newSquare.addPiece(this);

@@ -159,8 +159,15 @@ public class ChessBoard {
 
         ChessBot bot = new ChessBot(sides.get(BLACK));
         if(! whiteToMove){
-            //System.out.println(bot.getBestMove());
-
+            Move botMove = bot.getBestMove();
+            if(botMove == null){
+                System.out.println("BOT IS CHECKMATED");
+            }
+            else {
+                System.out.println(botMove);
+                botMove.execute();
+            }
+            whiteToMove = !whiteToMove;
         }
 
         calculateMoves();
@@ -205,9 +212,6 @@ public class ChessBoard {
         sides.get(WHITE).purgeRegularPieceMovesRegardingPins();
         sides.get(PieceColor.BLACK).purgeRegularPieceMovesRegardingPins();
 
-//        for(PieceColor c : kings.keySet()){
-//            kings.get(c).banNeighbouringSquaresForEnemyKing(); //TODO seems unnecessary
-//        }
 
         sides.get(WHITE).calculateKingMoves();
         sides.get(PieceColor.BLACK).calculateKingMoves();
@@ -254,9 +258,12 @@ public class ChessBoard {
 
     }
 
+    public Piece getPieceAt(int col, int row){
+        return getSquareAt(col,row).getPieceOnThisSquare();
+    }
 
 
-    public void printBoard(){
+    public void printBoard(int indentation){
 
 
         HashMap<PieceType,Character> dict = new HashMap<>();
@@ -270,7 +277,11 @@ public class ChessBoard {
 
 
         for(int row = 7; row >= 0 ; row--){
+            for(int i = 0; i < indentation; i++){
+                System.out.print(" ");
+            }
             for(int col = 0; col < 8; col++){
+
                 if(board.getSquareAt(col,row).isEmpty()){
                     System.out.print(".");
                 }
@@ -282,6 +293,9 @@ public class ChessBoard {
         }
         System.out.println();
     }
+
+
+
 
 
 }

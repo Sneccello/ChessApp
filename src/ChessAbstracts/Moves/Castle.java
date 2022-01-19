@@ -5,11 +5,14 @@ import BoardElements.Pieces.King;
 import BoardElements.Pieces.Rook;
 import BoardElements.Square;
 
+import java.util.ArrayList;
+
 public class Castle extends Move{
 
     Square rookOriginalSquare;
     Square rookCastleTargetSquare;
     Rook rook;
+    King king;
     public Castle(King king, Square from, Square to, Rook rook) {
         super(king, from, to);
         this.rookOriginalSquare = rook.getSquare();
@@ -18,22 +21,23 @@ public class Castle extends Move{
 
         this.rookCastleTargetSquare = ChessBoard.board.getSquareAt(rookCastleTargetCol,rook.getRow());
         this.rook = rook;
+        this.king = king;
     }
 
     @Override
     public void undo(){
-        super.undo();
+
         rook.moveTo(rookOriginalSquare);
-        ((King) piece ).castled(false);
-        ((King) piece ).leftStartingSquare(false);
-        rook.leftStartingSquare(false);
+        super.undo();
+
+
 
     }
 
     @Override
     public void execute(){
         super.execute();
-        ((King) piece ).castled(true);
+        king.castled(true);
         rook.moveTo(rookCastleTargetSquare);
     }
 

@@ -11,6 +11,7 @@ public class PieceSquareTableDB {
 
     private final HashMap<PieceType,int[][]> middleGameTables = new HashMap();
     //private HashMap<PieceType,int[][]> endGameTable = new HashMap(); currently only the king is different, im checking this case directly in getTableValue()
+    private int valueAmplifier = 2;
 
     private final int[][] kingMid =
             {{0, 0, 0, 0, 0, 0, 0, 0},
@@ -108,7 +109,7 @@ public class PieceSquareTableDB {
             tableToUse = kingEnd;
         }
 
-        return tableToUse[row][col] / 10.0; //arbitrary scaling.
+        return tableToUse[row][col] * valueAmplifier ; //arbitrary scaling.
     }
 
 

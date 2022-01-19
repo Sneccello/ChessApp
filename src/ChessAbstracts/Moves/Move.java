@@ -2,6 +2,9 @@ package ChessAbstracts.Moves;
 
 import BoardElements.Square;
 import BoardElements.Pieces.Piece;
+import ChessAbstracts.BinaryFlag;
+
+import java.util.ArrayList;
 
 public class Move {
 
@@ -10,21 +13,26 @@ public class Move {
     protected final Square to;
     protected final Piece piece;
     protected final Piece capturedPiece;
+    protected final ArrayList<BinaryFlag> flagsToResetWhenUndone = new ArrayList<>();
 
     public Move(Piece piece, Square from, Square to){
         this.from = from;
         this.to = to;
         this.piece = piece;
         this.capturedPiece = to.getPieceOnThisSquare();
-
     }
 
     //TODO reset king and rook flags for example castling
-    public Move(Piece piece,Square from, Square to, Piece capturedPiece){
+    public Move(Piece piece, Square from, Square to, Piece capturedPiece){
         this.to = to;
         this.piece = piece;
         this.capturedPiece = capturedPiece;
         this.from = from;
+    }
+
+
+    public void addFlagToResetWhenUndone(BinaryFlag b){
+        flagsToResetWhenUndone.add(b);
     }
 
 
@@ -55,13 +63,25 @@ public class Move {
 
     public void undo(){
         piece.moveTo(from);
-
         if(capturedPiece != null){ //TODO refactor new class NullPiece
             capturedPiece.revive(to);
+        }
+        resetFlags();
+    }
+
+    protected void resetFlags(){
+        for(BinaryFlag fo : flagsToResetWhenUndone){
+           fo.negate();
         }
 
     }
 
+    public double getCaptureValue(){
+        if(capturedPiece == null){
+            return 0;
+        }
+        return capturedPiece.getBaseValue();
+    }
 
     @Override
     public int hashCode() {

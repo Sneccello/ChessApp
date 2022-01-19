@@ -22,14 +22,14 @@ abstract public class Piece {
     protected double relativeValue;
 
 
-    protected final static HashMap<PieceType,Double> basePieceValues = new HashMap<>(); //~ 2020, AlphaZero + arbitrary king value
+    protected final static HashMap<PieceType,Integer> basePieceValues = new HashMap<>(); //~ 2020, AlphaZero + arbitrary king value
     static{
-        basePieceValues.put(PieceType.ROOK,5.63);
-        basePieceValues.put(PieceType.PAWN,1.0);
-        basePieceValues.put(PieceType.BISHOP,3.33);
-        basePieceValues.put(PieceType.KNIGHT,3.05);
-        basePieceValues.put(PieceType.QUEEN,9.5);
-        basePieceValues.put(PieceType.KING,3.7);
+        basePieceValues.put(PieceType.ROOK,560);
+        basePieceValues.put(PieceType.PAWN,100);
+        basePieceValues.put(PieceType.BISHOP,333);
+        basePieceValues.put(PieceType.KNIGHT,305);
+        basePieceValues.put(PieceType.QUEEN,950);
+        basePieceValues.put(PieceType.KING,370);
 
     }
     protected final static PieceSquareTableDB pieceSquareTableDB = new PieceSquareTableDB();

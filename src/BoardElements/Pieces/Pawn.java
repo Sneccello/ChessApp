@@ -1,9 +1,9 @@
 package BoardElements.Pieces;
 
 import BoardElements.*;
+import ChessAbstracts.BinaryFlag;
 import ChessAbstracts.Check;
 import ChessAbstracts.Moves.EnPassant;
-import ChessAbstracts.Moves.Lunge;
 import ChessAbstracts.Moves.Move;
 
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import static BoardElements.ChessBoard.board;
 public class Pawn extends Piece {
 
     int promotionRowIndex;
-    boolean leftStartingSquare = false;
+    BinaryFlag leftStartingSquareFlag = new BinaryFlag(false);
 
     public Pawn(PieceColor PiececCol, int posCol, int posRow, Side side) {
         super(PieceType.PAWN, PiececCol,posCol,posRow,side);
@@ -51,21 +51,24 @@ public class Pawn extends Piece {
         return controlledSquares;
     }
 
-    public void setLeftStartingSquare(boolean b){
-        leftStartingSquare = b;
+    private boolean hasLeftStartingSquare(){
+        return leftStartingSquareFlag.value();
     }
 
     private HashSet<Move> calculateForwardSquares(){
         HashSet<Move> forwardMoves = new HashSet<>();
         for(int step = 1; step <=2 ; step++){ //test moving ahead 1 or 2
-            if(step == 1 || !leftStartingSquare) {
+            if(step == 1 || ! hasLeftStartingSquare()) {
                 Square targetSquare = testMoveForwardBy(step);
                 if (targetSquare != null) {
 
                     if (step == 1) {
                         forwardMoves.add(new Move(this, square,targetSquare));
                     } else {
-                        forwardMoves.add(new Lunge(this,square,targetSquare));
+                        Move lungeForward = new Move(this,square,targetSquare);
+                        lungeForward.addFlagToResetWhenUndone(leftStartingSquareFlag);
+
+                        forwardMoves.add(lungeForward);
                     }
                 }
             }
@@ -175,7 +178,7 @@ public class Pawn extends Piece {
         square.removePiece();
         newSquare.addPiece(this);
         square = newSquare;
-        leftStartingSquare = true;
+        leftStartingSquareFlag.setValue(true);
 
         if(square.getRow() == promotionRowIndex){
             square.removePiece();
