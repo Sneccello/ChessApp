@@ -18,19 +18,16 @@ public class Pawn extends Piece {
 
     public Pawn(PieceColor PiececCol, int posCol, int posRow, Side side) {
         super(PieceType.PAWN, PiececCol,posCol,posRow,side);
-        rowIncrementTowardsCenter = (color == PieceColor.WHITE ? 1 : -1);
-        promotionRowIndex = Math.max(0,rowIncrementTowardsCenter*7);
+        rowIncrementTowardsOpponent = (color == PieceColor.WHITE ? 1 : -1);
+        promotionRowIndex = Math.max(0, rowIncrementTowardsOpponent *7);
 
     }
 
+
     @Override
-    public double calculateRelativeValue() {
-        int isPassedPawn = board.checkPassedPawn(this) ? 1 : 0;
-        int isBlocked = board.getSquareAt(getCol(),getRow()+rowIncrementTowardsCenter).isEmpty() ? 0 : 1;
-
-
-        relativeValue =  baseValue + 0.15 * isPassedPawn - 0.1 * isBlocked + pieceSquareTableDB.getTableValue(this);
-        return relativeValue;
+    protected void initializeEvaluationAspects() {
+        //TODO
+        //no explicit evaluation here, since for example the pawn structure and mobility are evaluated the side -level
     }
 
     @Override
@@ -39,8 +36,8 @@ public class Pawn extends Piece {
 
         for(int xOffset = -1 ; xOffset <= 1; xOffset+=2){//test capturing forward
 
-            if(isValidSquare(getCol() + xOffset, getRow() + rowIncrementTowardsCenter)){
-                Square Square = board.getSquareAt(getCol()+xOffset,getRow()+rowIncrementTowardsCenter);
+            if(ChessBoard.board.checkIfCoordsAreOnTheBoard(getCol() + xOffset, getRow() + rowIncrementTowardsOpponent)){
+                Square Square = board.getSquareAt(getCol()+xOffset,getRow()+ rowIncrementTowardsOpponent);
 
                 controlledSquares.add(Square);
 
@@ -87,15 +84,15 @@ public class Pawn extends Piece {
             Move lastMove = ChessBoard.board.getLastMove();
             if(lastMove.getPiece().getType() == PieceType.PAWN){ //if pawn made the last move
                 //if that pawn stepped 2 Squares forward from its starting position
-                if(lastMove.getTo().getRow() == startingRowIdxForEnPassant && lastMove.getFrom().getRow() == startingRowIdxForEnPassant+rowIncrementTowardsCenter*2){
+                if(lastMove.getTo().getRow() == startingRowIdxForEnPassant && lastMove.getFrom().getRow() == startingRowIdxForEnPassant+ rowIncrementTowardsOpponent *2){
 
                     if(getCol()+1 < 8 && lastMove.getFrom().getCol() == getCol()+1){ //if the last move was made on one side (column-wise)
-                        Square targetSquare = ChessBoard.board.getSquareAt(getCol()+1,getRow()+rowIncrementTowardsCenter);
+                        Square targetSquare = ChessBoard.board.getSquareAt(getCol()+1,getRow()+ rowIncrementTowardsOpponent);
                         enPassantMoves.add(new EnPassant(this,square,targetSquare, lastMove.getPiece()));
 
                     }
                     else if(getCol()-1 >= 0 && lastMove.getFrom().getCol() == getCol()-1){//if the last move was made on my other side (column-wise)
-                        Square target = ChessBoard.board.getSquareAt(getCol()-1,getRow()+rowIncrementTowardsCenter);
+                        Square target = ChessBoard.board.getSquareAt(getCol()-1,getRow()+ rowIncrementTowardsOpponent);
                         enPassantMoves.add(new EnPassant(this,square,target,lastMove.getPiece()));
                     }
                 }
@@ -151,12 +148,12 @@ public class Pawn extends Piece {
         if(amount > 2 || amount < 0){
             return null;
         }
-        int rowAhead = getRow()+amount * rowIncrementTowardsCenter;
+        int rowAhead = getRow()+amount * rowIncrementTowardsOpponent;
         if(rowAhead >= 0 && rowAhead < 8){
             Square s = board.getSquareAt(getCol(),rowAhead);
             boolean blocked = false;
             for(int i = 1; i <= amount ; i++){//checking if it can step ahead 1 or 2 (<=amount) steps being not blocked
-                if( ! board.getSquareAt(getCol(),getRow()+i*rowIncrementTowardsCenter).isEmpty()){
+                if( ! board.getSquareAt(getCol(),getRow()+i* rowIncrementTowardsOpponent).isEmpty()){
                     blocked = true;
                 }
             }

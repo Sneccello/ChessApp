@@ -1,5 +1,8 @@
 package BoardElements.Pieces;
 
+import AI.EvaluationAspects.PieceEvaluation.CastlingRightsBonus;
+import AI.EvaluationAspects.PieceEvaluation.KingTropism;
+import AI.EvaluationAspects.PieceEvaluation.PawnShield;
 import BoardElements.*;
 import ChessAbstracts.BinaryFlag;
 import ChessAbstracts.CastlingPiece;
@@ -24,6 +27,7 @@ public class King extends Piece implements CastlingPiece {
     public King(PieceColor PiececCol, int posCol, int posRow, Side mySide) {
         super(PieceType.KING, PiececCol,posCol,posRow,mySide);
 
+
     }
 
     public void setRooks(Rook longSideRook, Rook shortSideRook){
@@ -36,10 +40,12 @@ public class King extends Piece implements CastlingPiece {
         castled.setValue(b);
     }
 
+
     @Override
-    public double calculateRelativeValue() {
-        relativeValue =  calculateSafetyAndActivity() + + pieceSquareTableDB.getTableValue(this);
-        return  relativeValue;
+    protected void initializeEvaluationAspects() {
+        evaluationAspects.add(new KingTropism(this, mySide.getOpponent()));
+        evaluationAspects.add(new PawnShield(this));
+        evaluationAspects.add(new CastlingRightsBonus(this));
     }
 
     @Override
@@ -51,7 +57,7 @@ public class King extends Piece implements CastlingPiece {
                 if( ! (j == 0 && i == 0)) {
                     int iCandidate = getCol() + i;
                     int jCandidate = getRow() + j;
-                    if (isValidSquare(iCandidate,jCandidate)) {
+                    if (ChessBoard.board.checkIfCoordsAreOnTheBoard(iCandidate,jCandidate)) {
                         Square s = ChessBoard.board.getSquareAt(iCandidate,jCandidate);
                         controlledSquares.add(s);
                     }
@@ -62,44 +68,8 @@ public class King extends Piece implements CastlingPiece {
         return controlledSquares;
     }
 
-    public int countPawnShield(){
-        int rowAheadIdx = getRow() + rowIncrementTowardsCenter;
-        int pawnShield = 0;
-
-        for(int i = -1; i <= 1 ; i++) {
-            int colToCheck = getCol() + i;
-            if (isValidSquare(colToCheck,rowAheadIdx)) {
-                Square t1 = ChessBoard.board.getSquareAt(getCol(), rowAheadIdx);
-                if( ! t1.isEmpty() && t1.getPieceOnThisSquare().getType() == PieceType.PAWN){
-                    pawnShield++;
-                }
-            }
-        }
-        return pawnShield;
-
-    }
 
 
-
-    private double calculateSafetyAndActivity(){
-
-
-        int nPinnedPiecesToTheKing = mySide.sumPins();
-
-        int nCastleRights = 0;
-        nCastleRights += ! rookShortSide.hasLeftStartingSquare() && ! hasLeftStartingSquare() ? 1 : 0;
-        nCastleRights += ! rookLongSide.hasLeftStartingSquare() && ! hasLeftStartingSquare() ? 1 : 0;
-
-
-        double tropism = mySide.getOpponent().evaluateKingTropism(square);
-
-        double safety = 0.5 * nCastleRights - 1.0 * nPinnedPiecesToTheKing - 0.8 * tropism;
-        if(castled.value() && ! ChessBoard.board.inEndGame()){
-            safety += 0.75 * countPawnShield();
-        }
-
-        return safety;
-    }
 
     @Override
     public HashSet<Move> calculatePossibleMoves() {
@@ -157,7 +127,7 @@ public class King extends Piece implements CastlingPiece {
         return leftStartingPositionFlag;
     }
 
-    private boolean canCastleShort(){
+    public boolean canCastleShort(){
         if( rookShortSide.hasLeftStartingSquare() || hasLeftStartingSquare()){
             return false;
         }
@@ -188,7 +158,7 @@ public class King extends Piece implements CastlingPiece {
 
 
 
-    private boolean canCastleLong(){
+    public boolean canCastleLong(){
         if( rookLongSide.hasLeftStartingSquare() || hasLeftStartingSquare()){
             return false;
         }

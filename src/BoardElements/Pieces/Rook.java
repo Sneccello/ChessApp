@@ -1,5 +1,7 @@
 package BoardElements.Pieces;
 
+import AI.EvaluationAspects.PieceEvaluation.PawnsInGame;
+import AI.EvaluationAspects.PieceEvaluation.RookOnSeventhRankBonus;
 import BoardElements.ChessBoard;
 import BoardElements.Side;
 import BoardElements.Square;
@@ -14,7 +16,7 @@ public class Rook extends SliderPiece implements CastlingPiece {
 
 
     King myKing;//need to store so that castling rights are looked after
-    private BinaryFlag leftStartingSquareFlag = new BinaryFlag(false);
+    private final BinaryFlag leftStartingSquareFlag = new BinaryFlag(false);
 
 
 
@@ -25,39 +27,15 @@ public class Rook extends SliderPiece implements CastlingPiece {
 
     }
 
-
-    private Rook getOtherRook(){
-        for(Piece p : mySide.getRegularPieces()){
-            if(p.type == PieceType.ROOK && p != this){
-                return (Rook) p;
-            }
-        }
-        return null;
-    }
-
     public void setLeftStartingSquare(boolean b){
         leftStartingSquareFlag.setValue(b);
     }
 
+
     @Override
-    public double calculateRelativeValue() {
-        int nPawnsInGame = ChessBoard.board.getNumberOfPawnsInGame();
-        int seventhRankIdx = ( color == PieceColor.WHITE ? 6 : 1 );
-        int pawnsInFile = ChessBoard.board.countPawnsInFile(getCol());
-        Rook otherRook = getOtherRook();
-        int protectionByOtherRook = 0;
-        if(otherRook != null && calculateControlledSquares().contains(otherRook.square)){
-            protectionByOtherRook = 1;
-        }
-        int seventhRankPositionValue = (seventhRankIdx == getRow() ? 1 : 0);
-
-        relativeValue =  1.0/16 * nPawnsInGame
-                + 0.5 * (seventhRankPositionValue
-                + protectionByOtherRook) * (seventhRankPositionValue + protectionByOtherRook)
-                - pawnsInFile * pawnsInFile * 0.25
-                + pieceSquareTableDB.getTableValue(this);
-
-        return relativeValue;
+    protected void initializeEvaluationAspects() {
+        evaluationAspects.add(new PawnsInGame(true));
+        evaluationAspects.add(new RookOnSeventhRankBonus(this));
     }
 
     @Override

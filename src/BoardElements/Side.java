@@ -1,5 +1,7 @@
 package BoardElements;
 
+import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
+import AI.EvaluationAspects.SideEvaluation.*;
 import ChessAbstracts.Moves.Move;
 import BoardElements.Pieces.*;
 import Views.SideView;
@@ -10,17 +12,43 @@ import java.util.HashSet;
 public class Side {
     private final PieceColor color;
     ArrayList<Piece> regularPieces = new ArrayList<Piece>(15); //everything but the king
-    private final King king;
+    private King king;
     private final SideView sideView = new SideView();
     private Side opponent;
 
     private int numberOfPossibleMoves;
+    protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
+
 
     public Side(PieceColor color){
-
         this.color = color;
-        int backRankIdx = (color == PieceColor.WHITE ? 0 : 7);
+    }
 
+    public void setOpponent(Side opp){
+        opponent = opp;
+        initializePieces();
+        initializeEvaluationAspects();
+
+    }
+
+    private void initializeEvaluationAspects(){
+        evaluationAspects.add(new BishopPairBonus(this));
+        evaluationAspects.add(new ConnectedRooksBonus(this));
+        evaluationAspects.add(new PassedPawnsBonus(this));
+        evaluationAspects.add(new PawnIslandsPenalty(this));
+        evaluationAspects.add(new PawnMobilityBonus(this));
+        evaluationAspects.add(new PinsPenalty(this));
+        evaluationAspects.add(new ColorWeaknessPenalty(this));
+        evaluationAspects.add(new OpponentCheckmatedBonus(this));
+    }
+
+
+
+
+
+    private void initializePieces(){
+
+        int backRankIdx = (color == PieceColor.WHITE ? 0 : 7);
         this.king = new King(color,4,backRankIdx,this);
         sideView.addPieceView(king.getView());
         ChessBoard.board.addKing(king);
@@ -49,19 +77,35 @@ public class Side {
             Pawn p = new Pawn(color,i, pawnRow, this);
             addPiece(p);
         }
+
     }
+
+
+    public double evaluate(){
+        double sum = 0;
+
+        for(Piece piece : regularPieces){
+            sum += piece.evaluate();
+        }
+        sum += king.evaluate();
+
+        for(AbstractBaseEvaluationAspect aspect : evaluationAspects){
+            sum += aspect.evaluate();
+        }
+
+        return sum;
+    }
+
+
 
     public double countMaterial(){
         double sum = 0;
         for(Piece p : regularPieces){
-            sum += p.getBaseValue();
+            sum += p.getBasePieceValue();
         }
         return sum;
     }
 
-    public void setOpponent(Side opp){
-        opponent = opp;
-    }
 
     public Side getOpponent(){
         return opponent;
@@ -81,22 +125,32 @@ public class Side {
         return color;
     }
 
-    public boolean checkPassedPawn(Pawn enemyPawn){
-        if(color == PieceColor.WHITE){
-            for(Piece p : regularPieces){
-                if(p.getType() == PieceType.PAWN && p.getRow() < enemyPawn.getRow()){
-                    return false;
-                }
+
+    private boolean checkIfPawnIsPassedInColumn(Pawn pawn, int colIdx){
+
+        int row = pawn.getRow() + pawn.getRowIncrementTowardsOpponent();
+        while(row < 8 && row >= 0) {
+            Square s = ChessBoard.board.getSquareAt(colIdx, row);
+            if(s.isOccupied() && s.getPieceOnThisSquare().getType() == PieceType.PAWN && s.getPieceOnThisSquare().isDifferentColorAs(pawn)) {
+                return false;
             }
-        }
-        else{
-            for(Piece p : regularPieces){
-                if(p.getType() == PieceType.PAWN && p.getRow() > enemyPawn.getRow()){
-                    return false;
-                }
-            }
+            row += pawn.getRowIncrementTowardsOpponent();
         }
         return true;
+
+    }
+
+    public boolean checkPassedPawn(Pawn pawn){
+
+        boolean itIsPassed = true;
+        if(pawn.getCol() - 1 >= 0 && pawn.getCol() - 1 < 8){
+            itIsPassed = checkIfPawnIsPassedInColumn(pawn, pawn.getCol() - 1 );
+        }
+        if(pawn.getCol() + 1 >= 0 && pawn.getCol() + 1 < 8){
+            itIsPassed = ( itIsPassed && checkIfPawnIsPassedInColumn(pawn, pawn.getCol() + 1 ));
+        }
+
+        return itIsPassed;
     }
 
     public ArrayList<Piece> getRegularPieces(){
@@ -107,16 +161,7 @@ public class Side {
         return king;
     }
 
-    public double evaluateKingTropism(Square enemyKingSquare){
-        double tropism = 0;
-        for(Piece p : regularPieces) {
-            if (p.getType() != PieceType.PAWN) {
-                tropism += p.getBaseValue() / p.euclideanDistanceToSquare(enemyKingSquare);
-            }
-        }
 
-        return tropism;
-    }
 
 
 
@@ -185,46 +230,8 @@ public class Side {
         }
     }
 
-    public int sumPins(){
-        int sum = 0;
-        for(Piece p : regularPieces){
-            sum += p.countPins();
-        }
-        return sum;
-    }
 
 
-    public int countPawnIslands(){
-        boolean[] pawns = {false,false,false,false,false,false,false,false};
-        for(Piece p : regularPieces){
-            if(p.getType() == PieceType.PAWN){
-                pawns[p.getCol()] = true;
-            }
-        }
-        int islands = 0;
-        boolean currentlySeeingIsland = pawns[0];
-
-        for(int i = 1; i < pawns.length; i++){
-            if( ! pawns[i] && currentlySeeingIsland ){
-                currentlySeeingIsland = false;
-                islands+=1;
-            }
-            else if(pawns[i] && ! currentlySeeingIsland){
-                currentlySeeingIsland = true;
-            }
-            else if(pawns[i] && currentlySeeingIsland){
-                //continue
-            }
-
-        }
-
-        if(pawns[pawns.length-1]){
-            islands++;
-        }
-
-        return islands;
-
-    }
 
 
 

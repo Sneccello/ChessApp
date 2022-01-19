@@ -80,7 +80,7 @@ public class Move {
         if(capturedPiece == null){
             return 0;
         }
-        return capturedPiece.getBaseValue();
+        return capturedPiece.getBasePieceValue();
     }
 
     @Override

@@ -1,9 +1,12 @@
 package BoardElements.Pieces;
 
+import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
+import AI.EvaluationAspects.PieceEvaluation.BasePieceValueBonus;
+import AI.EvaluationAspects.PieceEvaluation.PositionHeuristic;
 import BoardElements.*;
 import ChessAbstracts.Moves.Move;
 import ChessAbstracts.Pin;
-import DataBases.PieceSquareTableDB;
+
 import Views.PieceView;
 
 import java.util.ArrayList;
@@ -18,11 +21,19 @@ abstract public class Piece {
     protected PieceView view;
     protected HashSet<Move> possibleMoves ;
     protected ArrayList<Pin> pins = new ArrayList<>();
-    protected int rowIncrementTowardsCenter;
+    protected int rowIncrementTowardsOpponent;
     protected double relativeValue;
+    protected boolean alive = true;
+
+    protected static Piece selectedPiece;
+
+    protected Square square;
+    Side mySide;
 
 
-    protected final static HashMap<PieceType,Integer> basePieceValues = new HashMap<>(); //~ 2020, AlphaZero + arbitrary king value
+    protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
+
+    public final static HashMap<PieceType,Integer> basePieceValues = new HashMap<>(); //~ 2020, AlphaZero + arbitrary king value
     static{
         basePieceValues.put(PieceType.ROOK,560);
         basePieceValues.put(PieceType.PAWN,100);
@@ -30,17 +41,9 @@ abstract public class Piece {
         basePieceValues.put(PieceType.KNIGHT,305);
         basePieceValues.put(PieceType.QUEEN,950);
         basePieceValues.put(PieceType.KING,370);
-
     }
-    protected final static PieceSquareTableDB pieceSquareTableDB = new PieceSquareTableDB();
-
-    protected double baseValue;
 
 
-    protected static Piece selectedPiece;
-
-    protected Square square;
-    Side mySide;
 
     Piece(PieceType type, PieceColor color, int posCol, int posRow,Side side){
         this.type = type;
@@ -53,20 +56,23 @@ abstract public class Piece {
         square = ChessBoard.board.getSquareAt(posCol,posRow);
         square.addPiece(this);
 
-        baseValue = basePieceValues.get(type);
 
-        rowIncrementTowardsCenter = ( color == PieceColor.WHITE ? 1 : -1 ) ;
+        rowIncrementTowardsOpponent = ( color == PieceColor.WHITE ? 1 : -1 ) ;
 
+        evaluationAspects.add(new BasePieceValueBonus(this));
+        evaluationAspects.add(new PositionHeuristic(this));
+        initializeEvaluationAspects();
     }
 
-    public double getBaseValue() {
-        return baseValue;
+    protected abstract void initializeEvaluationAspects();
+
+
+    public int getRowIncrementTowardsOpponent(){
+        return rowIncrementTowardsOpponent;
     }
 
-    public double euclideanDistanceToSquare(Square s){
-        double colDiff = s.getCol()-getCol();
-        double rowDiff = s.getRow()-getRow();
-        return Math.sqrt( colDiff*colDiff + rowDiff*rowDiff );
+    public int getBasePieceValue(){
+        return basePieceValues.get(type);
     }
 
     public int countPins(){
@@ -88,7 +94,7 @@ abstract public class Piece {
     }
 
 
-    protected boolean isProtecting(Square s){
+    public boolean isProtecting(Square s){
         for(Move m : possibleMoves){
             if(m.getTo() == s){
                 return true;
@@ -127,7 +133,17 @@ abstract public class Piece {
 
 
 
-    public abstract double calculateRelativeValue();
+    public double evaluate(){
+        double value = 0;
+
+        for(AbstractBaseEvaluationAspect aspect : evaluationAspects){
+            value += aspect.evaluate();
+        }
+        relativeValue = value;
+
+        return value;
+
+    }
 
     public double getRelativeValue(){
         return relativeValue;
@@ -228,9 +244,7 @@ abstract public class Piece {
 
     protected abstract HashSet<Square> calculateControlledSquares();
 
-    protected boolean isValidSquare(int col, int row){
-        return (col < 8 && col >= 0 && row < 8 && row >= 0);
-    }
+
 
     /**
      * drops the Squares where the piece cannot move to because its ally-occupied
@@ -263,8 +277,12 @@ abstract public class Piece {
     public void revive(Square tile){
         moveTo(tile);
         mySide.addPiece(this);
+        alive = true;
     }
 
+    public boolean isAlive(){
+        return alive;
+    }
 
 
     public boolean canStepTo(Square s){
@@ -301,6 +319,7 @@ abstract public class Piece {
 
 
     public void beCaptured(){
+        alive = false;
         mySide.removePiece(this);
     }
 

@@ -20,10 +20,10 @@ public class ChessBot implements Player {
     private final Side opponent;
     private final int MAX_SEARCH_DEPTH = 5;
     private final HashMap<String,Double> evaluationCache = new HashMap();
-    private int checkmateValue = 5000;
+    private final int checkmateValue = 5000;
 
 
-    //This hashmap is for caching boardstates
+    //This hashmap is for caching board states
     private static final HashMap<PieceType, Integer> numberCodesForPieces  = new HashMap<>();
 
     static {
@@ -115,7 +115,7 @@ public class ChessBot implements Player {
         double maxScore = Double.NEGATIVE_INFINITY;
         Move bestMove = null;
 
-        for(Move move : moves){//acting as as an AlphaBetaMAX move/algorithm to get the best move in stead of just evaluating
+        for(Move move : moves){//acting as as an AlphaBetaMAX round to get the best move as well in stead of just evaluating
             move.execute();
 
             double moveScore = alphaBetaMin(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY, MAX_SEARCH_DEPTH);
@@ -182,28 +182,6 @@ public class ChessBot implements Player {
     }
 
 
-    private double evaluateSide(Side side){
-
-        double relativeValueSum = 0;
-
-        for(Piece p : side.getRegularPieces()){
-            relativeValueSum += p.getRelativeValue();
-        }
-        relativeValueSum += side.getKing().getRelativeValue();
-
-        int pawnIslands = side.countPawnIslands();
-
-        double finalValue = relativeValueSum - pawnIslands/4.0;
-
-        boolean isCheckmateForOpponent = ( opponent.getPossibleMoves().size() == 0 );
-
-        if(isCheckmateForOpponent){
-            finalValue += checkmateValue;
-        }
-
-        return finalValue;
-
-    }
 
     public double evaluateBoard(){
 
@@ -213,11 +191,18 @@ public class ChessBot implements Player {
             return evaluationCache.get(codeForBoardState);
         }
 
-        double stateValue = evaluateSide(mySide) - evaluateSide(opponent);
+
+        double ownSideEval = mySide.evaluate();
+        double oppSideEval = opponent.evaluate();
+        System.out.println(ownSideEval + " "  + oppSideEval);
+
+
+        double stateValue = ownSideEval - oppSideEval;
 
         evaluationCache.put(codeForBoardState, stateValue);
 
-        return stateValue;
+        return -ownSideEval;
+        //return stateValue;
 
     }
 

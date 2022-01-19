@@ -11,6 +11,7 @@ public abstract class SliderPiece extends Piece {
 
     public SliderPiece(PieceType PiececType, PieceColor PiececCol, int posCol, int posRow, Side side) {
         super(PiececType, PiececCol,posCol,posRow,side);
+
     }
 
 

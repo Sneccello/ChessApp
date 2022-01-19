@@ -1,5 +1,7 @@
 package BoardElements.Pieces;
 
+import AI.EvaluationAspects.PieceEvaluation.PawnsInGame;
+import AI.EvaluationAspects.PieceEvaluation.UndefendedPiecePenalty;
 import BoardElements.*;
 import ChessAbstracts.Check;
 
@@ -13,22 +15,12 @@ public class Knight extends Piece {
 
 
     @Override
-    public double calculateRelativeValue() {
-        int nPawnsInGame = ChessBoard.board.getNumberOfPawnsInGame();
-        HashSet<Square> mobilitySquares = calculateControlledSquares();
-        HashSet<Square> pawnControlledSquaresByEnemy = mySide.getOpponent().getPawnControlledSquares();
-
-        mobilitySquares.removeIf(pawnControlledSquaresByEnemy::contains);
-
-        int mobility = mobilitySquares.size();
-
-
-        relativeValue =  - 1.0/16 * nPawnsInGame + 0.2 * mobility + pieceSquareTableDB.getTableValue(this);
-
-        return  relativeValue;
+    protected void initializeEvaluationAspects() {
+        evaluationAspects.add(new UndefendedPiecePenalty(this));
+        evaluationAspects.add(new PawnsInGame(false));
     }
 
-    protected HashSet<Square> calculateControlledSquares() {
+    public HashSet<Square> calculateControlledSquares() {
         HashSet<Square> controlledSquares = new HashSet<>();
 
         for(int absRowOffset = 1; absRowOffset <= 2; absRowOffset++) {
@@ -41,7 +33,7 @@ public class Knight extends Piece {
                     int candidateCol = getCol() + colOffset;
                     int candidateRow = getRow() + rowOffset;
 
-                    if (isValidSquare(candidateCol,candidateRow)) {
+                    if (ChessBoard.board.checkIfCoordsAreOnTheBoard(candidateCol,candidateRow)) {
                         Square candidateSquare = ChessBoard.board.getSquareAt(candidateCol, candidateRow);
 
                         controlledSquares.add(candidateSquare);

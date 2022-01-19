@@ -56,6 +56,10 @@ public class Square {
 
     }
 
+    public boolean isOccupied(){
+        return !isEmpty();
+    }
+
 
     public void trySelectingPieceOnThisSquare(){
         if(pieceOnThisSquare != null && pieceOnThisSquare.getColor() == ChessBoard.board.colorToMove()){

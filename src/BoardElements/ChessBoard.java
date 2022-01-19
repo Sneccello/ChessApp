@@ -61,13 +61,6 @@ public class ChessBoard {
 
 
 
-    public boolean checkPassedPawn(Pawn pawn){
-        Side enemySide = pawn.getColor() == WHITE ? sides.get(PieceColor.BLACK) : sides.get(WHITE);
-
-        return enemySide.checkPassedPawn(pawn);
-
-    }
-
 //    public void addIllegalKingSquareForOpponent(Piece sender, Square s){
 //        HashSet<Square> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalSquaresForBlackKing : illegalSquaresForWhiteKing);
 //        setToWorkWith.add(s);
@@ -77,6 +70,10 @@ public class ChessBoard {
         HashSet<Square> setToWorkWith = (sender.getColor() == WHITE ? illegalSquaresForBlackKing : illegalSquaresForWhiteKing);
         setToWorkWith.addAll(Squares);
 
+    }
+
+    public boolean checkIfCoordsAreOnTheBoard(int col, int row){
+        return (col < 8 && col >= 0 && row < 8 && row >= 0);
     }
 
     public boolean inEndGame(){ //lets say 15 or less points of material is left for each side.
@@ -133,9 +130,9 @@ public class ChessBoard {
     private void refreshRelativeValues(){
         for(PieceColor pc : sides.keySet()){
             for(Piece p : sides.get(pc).regularPieces){
-                p.calculateRelativeValue();
+                p.evaluate();
             }
-            sides.get(pc).getKing().calculateRelativeValue();
+            sides.get(pc).getKing().evaluate();
         }
     }
 
