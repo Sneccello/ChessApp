@@ -96,7 +96,7 @@ public class PositionHeuristic extends AbstractBaseEvaluationAspect {
 
 
         this.piece = piece;
-        aspectCoefficient = 100;
+        aspectCoefficient = 4;
 
     }
 

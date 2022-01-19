@@ -120,13 +120,14 @@ public class ChessBot implements Player {
 
             double moveScore = alphaBetaMin(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY, MAX_SEARCH_DEPTH);
             if(moveScore > maxScore){
+                System.out.println("Move score " + moveScore);
                 maxScore = moveScore;
                 bestMove = move;
             }
 
             move.undo();
         }
-
+        System.out.println("score  "+  maxScore);
         return bestMove;
 
     }
@@ -172,7 +173,7 @@ public class ChessBot implements Player {
             double score  = alphaBetaMax(alpha,beta,depthLeft-1);
             move.undo();
             if(score <= alpha){
-                return beta;
+                return alpha;
             }
             if(score < beta){
                 alpha = score;
@@ -194,8 +195,6 @@ public class ChessBot implements Player {
 
         double ownSideEval = mySide.evaluate();
         double oppSideEval = opponent.evaluate();
-        System.out.println(ownSideEval + " "  + oppSideEval);
-
 
         double stateValue = ownSideEval - oppSideEval;
 

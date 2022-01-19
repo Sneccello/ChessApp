@@ -16,8 +16,8 @@ public class Pawn extends Piece {
     int promotionRowIndex;
     BinaryFlag leftStartingSquareFlag = new BinaryFlag(false);
 
-    public Pawn(PieceColor PiececCol, int posCol, int posRow, Side side) {
-        super(PieceType.PAWN, PiececCol,posCol,posRow,side);
+    public Pawn(PieceColor pieceColor, int posCol, int posRow, Side side) {
+        super(PieceType.PAWN, pieceColor,posCol,posRow,side);
         rowIncrementTowardsOpponent = (color == PieceColor.WHITE ? 1 : -1);
         promotionRowIndex = Math.max(0, rowIncrementTowardsOpponent *7);
 
