@@ -8,8 +8,8 @@ import ChessAbstracts.Check;
 import java.util.HashSet;
 
 public class Knight extends Piece {
-    public Knight(PieceColor PiececCol, int posCol, int posRow, Side side) {
-        super(PieceType.KNIGHT, PiececCol,posCol,posRow,side);
+    public Knight( int posCol, int posRow, Side side) {
+        super(PieceType.KNIGHT, posCol,posRow,side);
 
     }
 

@@ -1,6 +1,8 @@
 package Views;
 
 import BoardElements.ChessBoard;
+import BoardElements.Pieces.Pawn;
+import BoardElements.Pieces.PieceType;
 import ChessAbstracts.Moves.Move;
 import BoardElements.Square;
 import BoardElements.Pieces.Piece;
@@ -17,8 +19,6 @@ public class SquareView {
     private static final Color selectedColor = Color.CYAN;
     private static final Color darkColor = Color.ORANGE;
     private static final Color lightColor = Color.WHITE;
-
-
 
     int x;
     int y;
@@ -57,22 +57,17 @@ public class SquareView {
         return y;
     }
 
+
+
+
     public void clicked() {
 
         Piece selectedPiece = Piece.getSelectedPiece();
 
         if (selectedPiece != null) { //move to an empty Square or capture something
 
-            HashSet<Move> moves = selectedPiece.getPossibleMoves();
+            selectedPiece.tryToMoveToSquare(observedSquare);
 
-
-            for(Move move : moves){
-                if(move.getTo() == observedSquare){
-                    move.execute();
-                    ChessBoard.board.moveWasMade(move);
-                    break;
-                }
-            }
 
             Piece.selectPiece(null); //deselect
 

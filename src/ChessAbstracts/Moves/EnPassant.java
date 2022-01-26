@@ -9,15 +9,15 @@ public class EnPassant extends Move {
 
     Square originalCapturedPieceSquare;
 
-    public EnPassant(Piece piece, Square from, Square to, Piece capturedPiece) {
-        super(piece, from, to, capturedPiece);
+    public EnPassant(Piece actorPiece, Square from, Square to, Piece capturedPiece) {
+        super(actorPiece, from, to, capturedPiece);
         originalCapturedPieceSquare = ChessBoard.board.getSquareAt(to.getCol(),from.getRow());
     }
 
     @Override
     public void undo(){
         super.undo();
-        Square originalSquareOfCapturedPiece = ChessBoard.board.getSquareAt(capturedPiece.getCol(), piece.getRow());
+        Square originalSquareOfCapturedPiece = ChessBoard.board.getSquareAt(capturedPiece.getCol(), actorPiece.getRow());
         capturedPiece.moveTo(originalSquareOfCapturedPiece);
     }
 

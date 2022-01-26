@@ -20,8 +20,8 @@ public class Rook extends SliderPiece implements CastlingPiece {
 
 
 
-    public Rook(PieceColor PieceCol, int posCol, int posRow, King myKing, Side side) {
-        super(PieceType.ROOK, PieceCol, posCol, posRow, side);
+    public Rook( int posCol, int posRow,Side side ,King myKing ) {
+        super(PieceType.ROOK, posCol, posRow, side);
 
         this.myKing = myKing;
 

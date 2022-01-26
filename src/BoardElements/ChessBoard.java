@@ -155,17 +155,17 @@ public class ChessBoard {
 
 
         ChessBot bot = new ChessBot(sides.get(BLACK));
-        if(! whiteToMove){
-            Move botMove = bot.getBestMove();
-            if(botMove == null){
-                System.out.println("BOT IS CHECKMATED");
-            }
-            else {
-                System.out.println(botMove);
-                botMove.execute();
-            }
-            whiteToMove = !whiteToMove;
-        }
+//        if(! whiteToMove){
+//            Move botMove = bot.getBestMove();
+//            if(botMove == null){
+//                System.out.println("BOT IS CHECKMATED");
+//            }
+//            else {
+//                System.out.println(botMove);
+//                botMove.execute();
+//            }
+//            whiteToMove = !whiteToMove;
+//        }
 
         calculateMoves();
 

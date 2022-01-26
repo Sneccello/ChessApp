@@ -24,8 +24,8 @@ public class King extends Piece implements CastlingPiece {
 
     private final LinkedList<Check> checks = new LinkedList<>();
 
-    public King(PieceColor PiececCol, int posCol, int posRow, Side mySide) {
-        super(PieceType.KING, PiececCol,posCol,posRow,mySide);
+    public King( int posCol, int posRow, Side mySide) {
+        super(PieceType.KING,posCol,posRow,mySide);
 
 
     }

@@ -49,17 +49,17 @@ public class Side {
     private void initializePieces(){
 
         int backRankIdx = (color == PieceColor.WHITE ? 0 : 7);
-        this.king = new King(color,4,backRankIdx,this);
+        this.king = new King(4,backRankIdx,this);
         sideView.addPieceView(king.getView());
         ChessBoard.board.addKing(king);
 
-        Rook r1 = new Rook(color,0,backRankIdx,king,this);
-        Knight k1 = new Knight(color,1,backRankIdx,this);
-        Bishop b1 = new Bishop(color,2,backRankIdx,this);
-        Queen q = new Queen(color,3,backRankIdx,this);
-        Bishop b2 = new Bishop(color,5,backRankIdx,this);
-        Knight k2 = new Knight(color,6,backRankIdx,this);
-        Rook r2 = new Rook(color,7,backRankIdx,king,this);
+        Rook r1 = new Rook(0,backRankIdx,this,king);
+        Knight k1 = new Knight(1,backRankIdx,this);
+        Bishop b1 = new Bishop(2,backRankIdx,this);
+        Queen q = new Queen(3,backRankIdx,this);
+        Bishop b2 = new Bishop(5,backRankIdx,this);
+        Knight k2 = new Knight(6,backRankIdx,this);
+        Rook r2 = new Rook(7,backRankIdx,this,king);
 
         king.setRooks(r1,r2);
 
@@ -74,7 +74,7 @@ public class Side {
 
         int pawnRow = (color == PieceColor.WHITE ? 1 : 6);
         for(int i = 0; i < 8; i++){
-            Pawn p = new Pawn(color,i, pawnRow, this);
+            Pawn p = new Pawn(i, pawnRow, this);
             addPiece(p);
         }
 

@@ -11,21 +11,21 @@ public class Move {
 
     protected final Square from;
     protected final Square to;
-    protected final Piece piece;
+    protected final Piece actorPiece;
     protected final Piece capturedPiece;
     protected final ArrayList<BinaryFlag> flagsToResetWhenUndone = new ArrayList<>();
 
-    public Move(Piece piece, Square from, Square to){
+    public Move(Piece actorPiece, Square from, Square to){
         this.from = from;
         this.to = to;
-        this.piece = piece;
+        this.actorPiece = actorPiece;
         this.capturedPiece = to.getPieceOnThisSquare();
     }
 
     //TODO reset king and rook flags for example castling
-    public Move(Piece piece, Square from, Square to, Piece capturedPiece){
+    public Move(Piece actorPiece, Square from, Square to, Piece capturedPiece){
         this.to = to;
-        this.piece = piece;
+        this.actorPiece = actorPiece;
         this.capturedPiece = capturedPiece;
         this.from = from;
     }
@@ -49,22 +49,22 @@ public class Move {
         return from;
     }
 
-    public Piece getPiece() {
-        return piece;
+    public Piece getActorPiece() {
+        return actorPiece;
     }
 
 
     public void execute(){
-        piece.moveTo(to);
+        actorPiece.moveTo(to);
         if(capturedPiece != null){
             capturedPiece.beCaptured();
         }
     }
 
     public void undo(){
-        piece.moveTo(from);
+        actorPiece.moveTo(from);
         if(capturedPiece != null){ //TODO refactor new class NullPiece
-            capturedPiece.revive(to);
+            capturedPiece.reviveAt(to);
         }
         resetFlags();
     }
@@ -85,7 +85,7 @@ public class Move {
 
     @Override
     public int hashCode() {
-        return from.hashCode()*to.hashCode()*piece.hashCode() * (capturedPiece == null? 1 : capturedPiece.hashCode());
+        return from.hashCode()*to.hashCode()* actorPiece.hashCode() * (capturedPiece == null? 1 : capturedPiece.hashCode());
     }
 
     @Override
@@ -98,11 +98,11 @@ public class Move {
         }
 
         Move m = (Move) obj;
-        return m.getTo() == to && m.getFrom() == from && m.getPiece() == piece && m.getCapturedPiece() == capturedPiece;
+        return m.getTo() == to && m.getFrom() == from && m.getActorPiece() == actorPiece && m.getCapturedPiece() == capturedPiece;
     }
 
     @Override
     public String toString() {
-        return String.format("Move from %s to %s piece: %s %s capturing %s", from, to, piece.getColor(), piece.getType(), capturedPiece);
+        return String.format("Move from %s to %s piece: %s %s capturing %s", from, to, actorPiece.getColor(), actorPiece.getType(), capturedPiece);
     }
 }

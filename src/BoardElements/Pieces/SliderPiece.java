@@ -9,8 +9,8 @@ import java.util.HashSet;
 
 public abstract class SliderPiece extends Piece {
 
-    public SliderPiece(PieceType PiececType, PieceColor PiececCol, int posCol, int posRow, Side side) {
-        super(PiececType, PiececCol,posCol,posRow,side);
+    public SliderPiece(PieceType PieceType,  int posCol, int posRow, Side side) {
+        super(PieceType,posCol,posRow,side);
 
     }
 

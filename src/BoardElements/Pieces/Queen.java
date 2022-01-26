@@ -8,8 +8,8 @@ import BoardElements.Square;
 import java.util.HashSet;
 
 public class Queen extends SliderPiece{
-    public Queen(PieceColor PiececCol, int posCol, int posRow, Side side) {
-        super(PieceType.QUEEN, PiececCol,posCol,posRow,side);
+    public Queen(int posCol, int posRow, Side side) {
+        super(PieceType.QUEEN, posCol,posRow,side);
 
     }
 

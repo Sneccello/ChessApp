@@ -2,14 +2,17 @@ import BoardElements.ChessBoard;
 import Views.ChessBoardPanel;
 import BoardElements.Side;
 import BoardElements.Pieces.*;
+import Views.PromotionOptionsPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.chrono.JapaneseChronology;
 
 public class ChessApp extends JFrame{
 
     JPanel chessFieldPanel;
     JPanel infoPanel;
+    JPanel promotionOptionsPanel;
 
     public ChessApp(){
         this.setPreferredSize(new Dimension(800+30,800+50));
@@ -18,7 +21,10 @@ public class ChessApp extends JFrame{
         this.chessFieldPanel = new ChessBoardPanel(ChessBoard.board.getView());
         this.add(chessFieldPanel, BorderLayout.CENTER);
 
-        this.setLayout(null);
+        promotionOptionsPanel = new PromotionOptionsPanel();
+
+        this.add(promotionOptionsPanel, BorderLayout.SOUTH);
+
 
         this.pack();
     }

@@ -15,8 +15,8 @@ public class Bishop extends SliderPiece{
 
 
 
-    public Bishop(PieceColor PiececCol, int posCol, int posRow, Side side) {
-        super(PieceType.BISHOP, PiececCol,posCol,posRow,side);
+    public Bishop(int posCol, int posRow, Side side) {
+        super(PieceType.BISHOP,posCol,posRow,side);
 
 
     }

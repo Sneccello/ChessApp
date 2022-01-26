@@ -6,7 +6,7 @@ import BoardElements.Pieces.Piece;
 import java.util.HashSet;
 
 public class Check {
-
+    //TODO knight check is not steppable-aside somehow
     private final Piece checker;
     private final HashSet<Square> possibleEndingSquares;
     public Check(Piece checker, HashSet<Square> possibleBlockingSquares) {

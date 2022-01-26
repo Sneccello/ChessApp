@@ -45,9 +45,9 @@ abstract public class Piece {
 
 
 
-    Piece(PieceType type, PieceColor color, int posCol, int posRow,Side side){
+    Piece(PieceType type, int posCol, int posRow,Side side){
         this.type = type;
-        this.color = color;
+        this.color = side.getColor();
         possibleMoves = new HashSet<>();
         mySide = side;
         String imageName = getStringForColor(color) + getStringForType(type)+".png";
@@ -274,7 +274,7 @@ abstract public class Piece {
 
     }
 
-    public void revive(Square tile){
+    public void reviveAt(Square tile){
         moveTo(tile);
         mySide.addPiece(this);
         alive = true;
@@ -307,6 +307,18 @@ abstract public class Piece {
     }
 
 
+    public void tryToMoveToSquare(Square destination){
+
+        for(Move move: possibleMoves){
+            if(move.getTo() == destination){
+                move.execute();
+                ChessBoard.board.moveWasMade(move);
+                break;
+            }
+        }
+
+    }
+
     public void clearPossibleMoves(){
         possibleMoves.clear();
     }
@@ -322,6 +334,9 @@ abstract public class Piece {
         alive = false;
         mySide.removePiece(this);
     }
+
+
+
 
 
     public static Piece getSelectedPiece(){
