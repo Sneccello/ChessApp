@@ -8,6 +8,7 @@ import ChessAbstracts.Moves.Move;
 import BoardElements.Side;
 import Control.Player;
 import BoardElements.Pieces.Piece;
+import Views.ChessBoardView;
 import com.sun.jdi.ArrayReference;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.HashSet;
 public class ChessBot implements Player {
     private final Side mySide;
     private final Side opponent;
-    private final int MAX_SEARCH_DEPTH = 5;
+    private final int MAX_SEARCH_DEPTH = 4;
     private final HashMap<String,Double> evaluationCache = new HashMap();
     private final int checkmateValue = 5000;
 
@@ -100,31 +101,32 @@ public class ChessBot implements Player {
         return listOfMoves;
     }
 
-    private ArrayList<Move> calculateAndOrderMoves(){
+    private ArrayList<Move> calculateAndOrderMoves(boolean forOpponent){
         ChessBoard.board.calculateMoves();
-        HashSet<Move> moves = mySide.getPossibleMoves();
+
+        Side side = forOpponent? mySide.getOpponent() : mySide;
+
+        HashSet<Move> moves = side.getPossibleMoves();
         return orderMovesForAlphaBetaAlgorithm(moves);
     }
 
-
     public Move getBestMove(){
 
-        ArrayList<Move> moves = calculateAndOrderMoves();
+        ArrayList<Move> moves = calculateAndOrderMoves(false);
 
 
         double maxScore = Double.NEGATIVE_INFINITY;
         Move bestMove = null;
 
-        for(Move move : moves){//acting as as an AlphaBetaMAX round to get the best move as well in stead of just evaluating
+        for(Move move : moves){//acting as as an AlphaBetaMAX round to get the best move as well instead of just evaluating
             move.execute();
 
-            double moveScore = alphaBetaMin(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY, MAX_SEARCH_DEPTH);
+            double moveScore = alphaBetaMin(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY, MAX_SEARCH_DEPTH-1);
             if(moveScore > maxScore){
                 System.out.println("Move score " + moveScore);
                 maxScore = moveScore;
                 bestMove = move;
             }
-
             move.undo();
         }
         System.out.println("score  "+  maxScore);
@@ -138,48 +140,56 @@ public class ChessBot implements Player {
             return evaluateBoard();
         }
 
-        ArrayList<Move> moves = calculateAndOrderMoves();
+        ArrayList<Move> moves = calculateAndOrderMoves(false);
+
+        double maxScore=Double.NEGATIVE_INFINITY;
 
         for(Move move : moves){
             move.execute();
 
             double score  = alphaBetaMin(alpha,beta,depthLeft-1);
-            move.undo();
 
+            maxScore = Math.max(score,maxScore);
+            move.undo();
             if(score >= beta){
-                return beta;
+                break;
             }
-            if(score > alpha){
-                alpha = score;
-            }
+
+            alpha = Math.max(alpha,maxScore);
+
 
         }
-        return alpha;
+        return maxScore;
 
     }
 
     private double alphaBetaMin(double alpha, double beta, int depthLeft){
 
         if(depthLeft == 0){
-            return -evaluateBoard();
+            return evaluateBoard();
         }
 
-        ArrayList<Move> moves = calculateAndOrderMoves();
+        ArrayList<Move> moves = calculateAndOrderMoves(true);
 
+
+        double minScore = Double.POSITIVE_INFINITY;
         for(Move move : moves){
             move.execute();
 
 
             double score  = alphaBetaMax(alpha,beta,depthLeft-1);
+
             move.undo();
-            if(score <= alpha){
-                return alpha;
+            if(score < minScore) {
+                minScore = score;
             }
-            if(score < beta){
-                alpha = score;
+            if(score < alpha){
+                break;
             }
+            beta = Math.min(beta, minScore);
+
         }
-        return beta;
+        return minScore;
     }
 
 
@@ -200,8 +210,8 @@ public class ChessBot implements Player {
 
         evaluationCache.put(codeForBoardState, stateValue);
 
-        return -ownSideEval;
-        //return stateValue;
+//        return -ownSideEval;
+        return stateValue;
 
     }
 
