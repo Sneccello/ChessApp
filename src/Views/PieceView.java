@@ -13,6 +13,12 @@ public class PieceView {
     Piece observedPiece;
     boolean selected = false;
 
+    public static PieceEvaluationPanel getEvaluationPanel() {
+        return evaluationPanel;
+    }
+
+    private static PieceEvaluationPanel evaluationPanel;
+
     public PieceView(String imageName, Piece p) {
         String path = System.getProperty("user.dir") + "\\textures\\" + imageName;
         try {
@@ -31,14 +37,17 @@ public class PieceView {
         }
     }
 
+
+    public static void setPieceEvaluationPanel(PieceEvaluationPanel p){
+        evaluationPanel=p;
+    }
+
     public void paint(Graphics g){
 
         int x = observedPiece.getSquare().getView().getX(); //meh
         int y = observedPiece.getSquare().getView().getY();
         g.drawImage(image,x,y,null);
 
-
-        //TODO only for debug
 
         g.setFont(new Font("default", Font.BOLD, 16));
         g.setColor(new Color(36,140,48));

@@ -2,9 +2,7 @@ import AI.ChessBot;
 import BoardElements.ChessBoard;
 import BoardElements.Side;
 import BoardElements.Pieces.*;
-import Views.BotView;
-import Views.ChessBoardView;
-import Views.PromotionOptionsPanel;
+import Views.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,8 +14,9 @@ public class ChessApp extends JFrame{
     public final JPanel evalViews;
     JPanel promotionOptionsPanel;
 
+    PieceEvaluationPanel infoPanel;
     public ChessApp(){
-        this.setPreferredSize(new Dimension(1000,800));
+        this.setPreferredSize(new Dimension(1500,800));
 
 //        this.setVisible(true);
         this.chessBoardPanel = new ChessBoardView();
@@ -31,11 +30,15 @@ public class ChessApp extends JFrame{
 
         evalViews = new JPanel(new FlowLayout());
         evalViews.setPreferredSize(new Dimension(200,800));
-        this.add(evalViews, BorderLayout.EAST);
+        this.add(evalViews, BorderLayout.WEST);
 
         ChessBoard.board.registerView(chessBoardPanel);
         this.add(chessBoardPanel, BorderLayout.CENTER);
 
+
+
+        infoPanel = new PieceEvaluationPanel();
+        this.add(infoPanel, BorderLayout.EAST);
 
         setVisible(true);
 
@@ -65,7 +68,7 @@ public class ChessApp extends JFrame{
         BotView botview = new BotView(bot);
         bot.registerView(botview);
         window.evalViews.add(botview);
-        window.revalidate();
+
 
         blackSide.setBot(bot);
 
@@ -73,12 +76,9 @@ public class ChessApp extends JFrame{
         board.addSide(blackSide);
 
 
-
-
-
-
-
-
+        PieceView.setPieceEvaluationPanel(window.infoPanel);
+        window.infoPanel.updateInfo(board.getSquareViews()[0]);
+        window.revalidate();
 
         ChessBoard.board.calculateMoves(); //calculate possible moves
         window.repaint();

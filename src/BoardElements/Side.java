@@ -8,18 +8,23 @@ import BoardElements.Pieces.*;
 import Views.SideView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Side {
     private final PieceColor color;
     ArrayList<Piece> regularPieces = new ArrayList<Piece>(15); //everything but the king
     private King king;
-    private final SideView sideView = new SideView();
+    public final SideView sideView = new SideView();
     private Side opponent;
 
     private int numberOfPossibleMoves;
-    protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
 
+    public ArrayList<AbstractBaseEvaluationAspect> getEvaluationAspects() {
+        return evaluationAspects;
+    }
+
+    protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
     private ChessBot bot;
 
     public Side(PieceColor color){
@@ -107,7 +112,8 @@ public class Side {
         sum += king.evaluate();
 
         for(AbstractBaseEvaluationAspect aspect : evaluationAspects){
-            sum += aspect.evaluate();
+            double value = aspect.evaluate();
+            sum += value;
         }
 
         return sum;

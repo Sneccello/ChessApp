@@ -31,6 +31,9 @@ abstract public class Piece {
     protected Square startingSquare;
     Side mySide;
 
+    public ArrayList<AbstractBaseEvaluationAspect> getEvaluationAspects() {
+        return evaluationAspects;
+    }
 
     protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
 

@@ -64,6 +64,7 @@ public class SquareView {
 
         Piece selectedPiece = Piece.getSelectedPiece();
 
+
         if (selectedPiece != null) { //move to an empty Square or capture something
 
             selectedPiece.tryToMoveToSquare(observedSquare);

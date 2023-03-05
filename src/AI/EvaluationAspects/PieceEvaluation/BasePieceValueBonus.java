@@ -13,6 +13,7 @@ public class BasePieceValueBonus extends AbstractBaseEvaluationAspect {
         aspectCoefficient = 1;
         isPenalty = false;
         adhocMax = Piece.basePieceValues.get(piece.getType()) * aspectCoefficient;
+        name = "Base value";
     }
 
 

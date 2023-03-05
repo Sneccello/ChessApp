@@ -11,7 +11,7 @@ public class PawnsInGame extends AbstractBaseEvaluationAspect {
 
         aspectCoefficient = 8;
         this.isPenalty = isPenalty;
-        adhocMax = 16*aspectCoefficient;
+        adhocMax = 16*aspectCoefficient * (isPenalty? -1:1);
         name = "Pawns Still In Game";
     }
 

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 public class SideView {
 
+    public ArrayList<PieceView> getPieceViews() {
+        return pieceViews;
+    }
+
     private final ArrayList<PieceView> pieceViews = new ArrayList<>();
 
 

@@ -47,6 +47,15 @@ public class ChessBoardView extends JPanel implements MouseListener {
         }
     }
 
+    public SquareView locateSquare(int x, int y){
+        for(SquareView tw : ChessBoard.board.getSquareViews()){
+            if(tw.clickIsOnMe(x,y)){
+                return tw;
+            }
+        }
+        return null;
+    }
+
     public void locateClick(int x, int y){
         for(SquareView tw : ChessBoard.board.getSquareViews()){
             if(tw.clickIsOnMe(x,y)){
@@ -80,14 +89,18 @@ public class ChessBoardView extends JPanel implements MouseListener {
     public void mouseReleased(MouseEvent e) {
 
         if(e.getButton() == MouseEvent.BUTTON1){
-            this.locateClick(e.getX(),e.getY());
-
+            SquareView sw = locateSquare(e.getX(),e.getY());
+            if(sw != null){
+                sw.clicked();
+            }
         }
         else if(e.getButton() == MouseEvent.BUTTON3){
-            ChessBoard.board.undoLastMove();
+            SquareView sw = locateSquare(e.getX(),e.getY());
+            if(sw != null){
+                PieceView.getEvaluationPanel().updateInfo(sw);
+            }
 
         }
-
         repaint();
     }
 
