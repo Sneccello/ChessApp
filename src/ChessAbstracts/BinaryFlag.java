@@ -5,13 +5,15 @@ import java.util.Objects;
 public class BinaryFlag {
 
     private boolean value;
+    private boolean startingValue;
 
-    public BinaryFlag(boolean b){
-        this.value = b;
+    public BinaryFlag(boolean staringValue){
+        this.value = staringValue;
+        this.startingValue = staringValue;
     }
 
-    public void negate(){
-        value = !value;
+    public void reset(){
+        value = startingValue;
     }
 
     public boolean value(){

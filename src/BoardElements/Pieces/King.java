@@ -89,6 +89,12 @@ public class King extends Piece implements CastlingPiece {
 
         HashSet<Move> possibleMoves = convertSquaresToMoves(this,possibleSquares);
 
+        if(square == startingSquare){
+            for(Move move: possibleMoves){
+                move.addFlagToResetWhenUndone(leftStartingPositionFlag);
+            }
+        }
+
         //checking for castle, adding them to possible moves if can
 
 

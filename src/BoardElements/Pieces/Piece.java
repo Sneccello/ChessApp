@@ -28,6 +28,7 @@ abstract public class Piece {
     protected static Piece selectedPiece;
 
     protected Square square;
+    protected Square startingSquare;
     Side mySide;
 
 
@@ -55,6 +56,7 @@ abstract public class Piece {
 
         square = ChessBoard.board.getSquareAt(posCol,posRow);
         square.addPiece(this);
+        startingSquare = square;
 
 
         rowIncrementTowardsOpponent = ( color == PieceColor.WHITE ? 1 : -1 ) ;
@@ -301,7 +303,8 @@ abstract public class Piece {
 
         HashSet<Move> moves = new HashSet<>();
         for(Square t: Squares){
-            moves.add(new Move(p,p.getSquare(),t));
+            Move move = new Move(p,p.getSquare(),t);
+            moves.add(move);
         }
         return moves;
     }

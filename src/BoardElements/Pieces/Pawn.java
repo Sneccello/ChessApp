@@ -91,7 +91,12 @@ public class Pawn extends Piece {
                 HashSet<Move> promotions = generateAllPromotionPossibilities(targetSquare);
                 forwardMoves.addAll(promotions);
             } else {
-                forwardMoves.add(new Move(this, square, targetSquare));
+                Move forwardMove = new Move(this, square, targetSquare);
+                int startingIdx = promotionRowIndex - 6*rowIncrementTowardsOpponent;
+                if(square == startingSquare){
+                    forwardMove.addFlagToResetWhenUndone(leftStartingSquareFlag);
+                }
+                forwardMoves.add(forwardMove);
             }
         }
 

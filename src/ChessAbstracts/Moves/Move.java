@@ -71,7 +71,7 @@ public class Move {
 
     protected void resetFlags(){
         for(BinaryFlag fo : flagsToResetWhenUndone){
-           fo.negate();
+           fo.reset();
         }
 
     }
