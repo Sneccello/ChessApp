@@ -16,7 +16,7 @@ public class SideView {
         pieceViews.remove(pw);
     }
 
-    public void paintSide(Graphics g){
+    public void paint(Graphics g){
         for(PieceView pw : pieceViews){
             pw.paint(g);
         }

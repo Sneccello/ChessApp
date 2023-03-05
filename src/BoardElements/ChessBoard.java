@@ -21,7 +21,7 @@ public class ChessBoard {
     Square[][] Squares = new Square[8][8];
 
     public final static ChessBoard board = new ChessBoard();
-    private final ChessBoardView chessBoardView;
+    private ChessBoardView chessBoardView;
 
 
     private final HashSet<Square> illegalSquaresForWhiteKing = new HashSet<>();
@@ -30,26 +30,33 @@ public class ChessBoard {
 
     private boolean whiteToMove = true;
 
+    public void registerView(ChessBoardView view){
+        this.chessBoardView = view;
+    }
 
     private final LinkedList<Move> moves = new LinkedList<>();
 
+    private final  SquareView[] squareViews = new SquareView[64];
+
     private ChessBoard(){
 
-        SquareView[] SquareViews = new SquareView[64];
 
-        for(int row = 0; row < 8; row++){
-            for(int col = 0; col <  8; col++){
+
+        for(int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
 
                 Square s = new Square(null, col, row);
                 Squares[col][row] = s;
 
-                int idx = col*8+row;
-                SquareViews[idx] = s.getView();
+                int idx = col * 8 + row;
+                squareViews[idx] = s.getView();
             }
         }
+    }
 
-        chessBoardView = new ChessBoardView();
-        chessBoardView.setSquareViews(SquareViews);
+
+    public SquareView[] getSquareViews(){
+        return squareViews;
     }
 
     public void addSide(Side s){
@@ -59,12 +66,9 @@ public class ChessBoard {
 
 
 
-
-
-//    public void addIllegalKingSquareForOpponent(Piece sender, Square s){
-//        HashSet<Square> setToWorkWith = (sender.getColor() == PieceColor.WHITE ? illegalSquaresForBlackKing : illegalSquaresForWhiteKing);
-//        setToWorkWith.add(s);
-//    }
+    public HashMap<PieceColor,Side> getSides(){
+        return sides;
+    }
 
     public void addIllegalKingSquaresForOpponent(Piece sender,HashSet<Square> Squares){
         HashSet<Square> setToWorkWith = (sender.getColor() == WHITE ? illegalSquaresForBlackKing : illegalSquaresForWhiteKing);
@@ -150,28 +154,31 @@ public class ChessBoard {
     public void moveWasMade(Move m){
 
         moves.add(m);
-
+        chessBoardView.refresh();
         whiteToMove = ! whiteToMove;
 
 
-        ChessBot bot = new ChessBot(sides.get(BLACK));
-//        if(! whiteToMove){
-//            Move botMove = bot.getBestMove();
-//            if(botMove == null){
-//                System.out.println("BOT IS CHECKMATED");
-//            }
-//            else {
-//                System.out.println(botMove);
-//                botMove.execute();
-//            }
-//            whiteToMove = !whiteToMove;
-//        }
+        Side sideToMove = whiteToMove? sides.get(WHITE) : sides.get(BLACK);
+        if(sideToMove.hasBot()){
+            Move botMove = sideToMove.getBot().getBestMove();
+            if(botMove == null){
+                System.out.println("BOT IS CHECKMATED");
+            }
+            else {
+                System.out.println(botMove);
+                botMove.execute();
+            }
+            whiteToMove = !whiteToMove;
+        }
 
         calculateMoves();
 
         if(isCheckmate()){
             endGame();
         }
+
+
+
     }
 
     public void undoLastMove(){

@@ -1,30 +1,43 @@
+import AI.ChessBot;
 import BoardElements.ChessBoard;
-import Views.ChessBoardPanel;
 import BoardElements.Side;
 import BoardElements.Pieces.*;
+import Views.BotView;
+import Views.ChessBoardView;
 import Views.PromotionOptionsPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.time.chrono.JapaneseChronology;
+import java.util.Map;
 
 public class ChessApp extends JFrame{
 
-    JPanel chessFieldPanel;
-    JPanel infoPanel;
+    ChessBoardView chessBoardPanel;
+    public final JPanel evalViews;
     JPanel promotionOptionsPanel;
 
     public ChessApp(){
-        this.setPreferredSize(new Dimension(800+30,800+50));
+        this.setPreferredSize(new Dimension(800,800));
 
-        this.setVisible(true);
-        this.chessFieldPanel = new ChessBoardPanel(ChessBoard.board.getView());
-        this.add(chessFieldPanel, BorderLayout.CENTER);
+//        this.setVisible(true);
+        this.chessBoardPanel = new ChessBoardView();
+
+        ChessBoard.board.registerView(chessBoardPanel);
+        this.add(chessBoardPanel, BorderLayout.CENTER);
+
 
         promotionOptionsPanel = new PromotionOptionsPanel();
-
         this.add(promotionOptionsPanel, BorderLayout.SOUTH);
 
+        evalViews = new JPanel(new FlowLayout());
+        evalViews.setPreferredSize(new Dimension(100,800));
+        this.add(evalViews, BorderLayout.EAST);
+
+        ChessBoard.board.registerView(chessBoardPanel);
+        this.add(chessBoardPanel, BorderLayout.CENTER);
+
+
+        setVisible(true);
 
         this.pack();
     }
@@ -35,21 +48,31 @@ public class ChessApp extends JFrame{
 
 
         ChessBoard board = ChessBoard.board;
-        JFrame window = new ChessApp();
-
 
         //add the 2 kings so that the rook can have king pointers for castling
-
+        ChessApp window = new ChessApp();
 
         //TODO should setup nicer
         Side whiteSide = new Side(PieceColor.WHITE);
         Side blackSide = new Side(PieceColor.BLACK);
 
+
         whiteSide.setOpponent(blackSide);
         blackSide.setOpponent(whiteSide);
 
+
+        ChessBot bot = new ChessBot(blackSide);
+        BotView botview = new BotView(bot);
+        bot.registerView(botview);
+        window.evalViews.add(botview);
+        window.revalidate();
+
+        blackSide.setBot(bot);
+
         board.addSide(whiteSide);
         board.addSide(blackSide);
+
+
 
 
 

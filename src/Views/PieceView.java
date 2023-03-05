@@ -47,9 +47,6 @@ public class PieceView {
 
     }
 
-    public void setSelected(boolean b){
-        selected = b;
-    }
 
 
 }

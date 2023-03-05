@@ -1,5 +1,6 @@
 package BoardElements;
 
+import AI.ChessBot;
 import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
 import AI.EvaluationAspects.SideEvaluation.*;
 import ChessAbstracts.Moves.Move;
@@ -19,9 +20,25 @@ public class Side {
     private int numberOfPossibleMoves;
     protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
 
+    private ChessBot bot;
 
     public Side(PieceColor color){
         this.color = color;
+    }
+
+
+
+    public boolean hasBot(){
+        return bot != null;
+    }
+
+    public ChessBot getBot(){
+        return bot;
+    }
+
+
+    public void setBot(ChessBot bot){
+        this.bot = bot;
     }
 
     public void setOpponent(Side opp){

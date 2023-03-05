@@ -14,7 +14,8 @@ public class OpponentCheckmatedBonus extends AbstractSideEvaluationAspect{
     @Override
     protected int calculateAspectValue() {
 
-        return ( opponent.getNumberOfPossibleMoves() == 0 ? 10000 : 0 ) ;
+        int checkmateValue = 5000;
+        return ( opponent.getNumberOfPossibleMoves() == 0 ? checkmateValue : 0 ) ;
 
     }
 }

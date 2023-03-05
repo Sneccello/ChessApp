@@ -8,6 +8,7 @@ import ChessAbstracts.Moves.Move;
 import BoardElements.Side;
 import Control.Player;
 import BoardElements.Pieces.Piece;
+import Views.BotView;
 import Views.ChessBoardView;
 import com.sun.jdi.ArrayReference;
 
@@ -21,8 +22,9 @@ public class ChessBot implements Player {
     private final Side opponent;
     private final int MAX_SEARCH_DEPTH = 4;
     private final HashMap<String,Double> evaluationCache = new HashMap();
-    private final int checkmateValue = 5000;
 
+    private BotView view;
+    private double currentEvaluation = 0.0;
 
     //This hashmap is for caching board states
     private static final HashMap<PieceType, Integer> numberCodesForPieces  = new HashMap<>();
@@ -52,6 +54,17 @@ public class ChessBot implements Player {
         this.mySide = s;
         this.opponent = mySide.getOpponent();
 
+    }
+    public  Side  getSide(){
+        return mySide;
+    }
+
+    public void registerView(BotView view){
+        this.view = view;
+    }
+
+    public double getCurrentEvaluation(){
+        return currentEvaluation;
     }
 
     private String getCodeForPiece(Piece p){
@@ -123,13 +136,13 @@ public class ChessBot implements Player {
 
             double moveScore = alphaBetaMin(Double.NEGATIVE_INFINITY,Double.POSITIVE_INFINITY, MAX_SEARCH_DEPTH-1);
             if(moveScore > maxScore){
-                System.out.println("Move score " + moveScore);
                 maxScore = moveScore;
                 bestMove = move;
             }
             move.undo();
         }
-        System.out.println("score  "+  maxScore);
+        this.currentEvaluation = maxScore;
+        this.view.update();
         return bestMove;
 
     }
