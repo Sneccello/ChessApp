@@ -12,6 +12,8 @@ public class BishopPairBonus extends AbstractSideEvaluationAspect {
     Bishop bishop1 = null;
     Bishop bishop2 = null;
 
+    private final int bonusValue = 100;
+
     public BishopPairBonus(Side side){
         this.side = side;
 
@@ -27,13 +29,15 @@ public class BishopPairBonus extends AbstractSideEvaluationAspect {
         }
 
         this.aspectCoefficient = 1;
-
+        isPenalty = false;
+        adhocMax = aspectCoefficient*bonusValue;
+        name = "Bishop Pair Bonus";
 
     }
 
 
     @Override
     public int calculateAspectValue() {
-        return bishop1.isAlive() && bishop2.isAlive() ? 100 : 0;
+        return bishop1.isAlive() && bishop2.isAlive() ? bonusValue : 0;
     }
 }

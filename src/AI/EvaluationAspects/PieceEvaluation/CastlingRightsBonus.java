@@ -1,18 +1,21 @@
 package AI.EvaluationAspects.PieceEvaluation;
 
 import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
-import AI.EvaluationAspects.SideEvaluation.AbstractSideEvaluationAspect;
 import BoardElements.Pieces.King;
-import BoardElements.Side;
 
 public class CastlingRightsBonus extends AbstractBaseEvaluationAspect {
 
 
     King king;
+    private final int castlingRightValue = 40;
+
     public CastlingRightsBonus(King king){
 
         this.king = king;
-        aspectCoefficient = 40;
+        aspectCoefficient = 1;
+        isPenalty =false;
+        adhocMax = castlingRightValue*2*aspectCoefficient;
+        name = "Castling Rights";
     }
 
 
@@ -26,6 +29,6 @@ public class CastlingRightsBonus extends AbstractBaseEvaluationAspect {
             sidesWhereKingCanCastle++;
         }
 
-        return sidesWhereKingCanCastle;
+        return sidesWhereKingCanCastle*castlingRightValue;
     }
 }

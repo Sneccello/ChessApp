@@ -17,7 +17,7 @@ public class ChessApp extends JFrame{
     JPanel promotionOptionsPanel;
 
     public ChessApp(){
-        this.setPreferredSize(new Dimension(800,800));
+        this.setPreferredSize(new Dimension(1000,800));
 
 //        this.setVisible(true);
         this.chessBoardPanel = new ChessBoardView();
@@ -30,7 +30,7 @@ public class ChessApp extends JFrame{
         this.add(promotionOptionsPanel, BorderLayout.SOUTH);
 
         evalViews = new JPanel(new FlowLayout());
-        evalViews.setPreferredSize(new Dimension(100,800));
+        evalViews.setPreferredSize(new Dimension(200,800));
         this.add(evalViews, BorderLayout.EAST);
 
         ChessBoard.board.registerView(chessBoardPanel);

@@ -8,14 +8,16 @@ public class PawnsOnSameFilePenalty extends AbstractBaseEvaluationAspect {
 
     Piece piece;
 
-    PawnsOnSameFilePenalty(Piece piece){
+    public PawnsOnSameFilePenalty(Piece piece){
         this.piece = piece;
         aspectCoefficient = -15;
+        isPenalty=true;
+        adhocMax=2*aspectCoefficient;
+        name = "Pawns On The Same File";
     }
 
     @Override
     protected int calculateAspectValue() {
-        int nPawnsInFile =  ChessBoard.board.countPawnsInFile(piece.getCol());
-        return nPawnsInFile;
+        return ChessBoard.board.countPawnsInFile(piece.getCol());
     }
 }

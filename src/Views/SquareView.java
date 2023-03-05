@@ -17,7 +17,7 @@ public class SquareView {
     public static final int Square_SIZE = 80;
     private final Color color;
     private static final Color selectedColor = Color.CYAN;
-    private static final Color darkColor = Color.ORANGE;
+    private static final Color darkColor = new Color(100,100,100);
     private static final Color lightColor = Color.WHITE;
 
     int x;

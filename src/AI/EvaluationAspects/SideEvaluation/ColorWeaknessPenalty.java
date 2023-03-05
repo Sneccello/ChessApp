@@ -13,6 +13,9 @@ public class ColorWeaknessPenalty extends AbstractSideEvaluationAspect {
     public ColorWeaknessPenalty(Side side){
         this.side = side;
         aspectCoefficient = -10;
+        isPenalty = true;
+        adhocMax = aspectCoefficient*10;
+        name = "Color Weakness Penalty";
     }
 
     @Override
@@ -22,7 +25,6 @@ public class ColorWeaknessPenalty extends AbstractSideEvaluationAspect {
         int pawnsOnBlackSquares = 0;
         int minorPiecesOnBlackSquares = 0;
         int minorPiecesOnWhiteSquares = 0;
-        int nKnights = 0;
         for(Piece p : side.getRegularPieces()){
             switch (p.getType()){
                 case BISHOP -> {
@@ -34,9 +36,6 @@ public class ColorWeaknessPenalty extends AbstractSideEvaluationAspect {
                             minorPiecesOnBlackSquares++;
                         }
                     }
-                }
-                case KNIGHT -> {
-                    nKnights++;
                 }
                 case PAWN -> {
                     if(p.getColor() == WHITE){
@@ -56,6 +55,6 @@ public class ColorWeaknessPenalty extends AbstractSideEvaluationAspect {
         int blackSquaresStrength = pawnsOnBlackSquares + minorPiecesOnBlackSquares;
 
 
-        return Math.abs(whiteSquaresStrength - blackSquaresStrength) - nKnights;
+        return Math.abs(whiteSquaresStrength - blackSquaresStrength);
     }
 }

@@ -3,7 +3,9 @@ package AI.EvaluationAspects;
 public abstract class AbstractBaseEvaluationAspect {
 
     protected double aspectCoefficient;
-
+    protected boolean isPenalty;
+    protected double adhocMax; //a maximum value for visualizing e.g.
+    protected String name;
     public double getAspectCoefficient(){
         return aspectCoefficient;
     }

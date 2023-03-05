@@ -41,9 +41,9 @@ public class PieceView {
         //TODO only for debug
 
         g.setFont(new Font("default", Font.BOLD, 16));
-        g.setColor(new Color(34,177,76));
+        g.setColor(new Color(36,140,48));
         double value = observedPiece.getRelativeValue();
-        g.drawString(String.format("%.2f",value),x + 25,y + 50);
+        g.drawString(String.format("%.2f",value),x + 15,y + 75);
 
     }
 

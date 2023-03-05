@@ -1,5 +1,6 @@
 package BoardElements.Pieces;
 
+import AI.EvaluationAspects.PieceEvaluation.KnightMobilityBonus;
 import AI.EvaluationAspects.PieceEvaluation.PawnsInGame;
 import AI.EvaluationAspects.PieceEvaluation.UndefendedPiecePenalty;
 import BoardElements.*;
@@ -18,6 +19,7 @@ public class Knight extends Piece {
     protected void initializeEvaluationAspects() {
         evaluationAspects.add(new UndefendedPiecePenalty(this));
         evaluationAspects.add(new PawnsInGame(false));
+        evaluationAspects.add(new KnightMobilityBonus(this));
     }
 
     public HashSet<Square> calculateControlledSquares() {

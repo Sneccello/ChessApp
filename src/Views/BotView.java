@@ -14,7 +14,7 @@ public class BotView extends JPanel {
     int boxHeight = 600;
 
     public BotView(ChessBot bot){
-        this.setPreferredSize(new Dimension(50,boxHeight));
+        this.setPreferredSize(new Dimension(70,boxHeight));
         this.add(evalScoreLabel, BorderLayout.SOUTH);
         this.bot = bot;
         botName = bot.getSide().getColor().toString();
@@ -37,9 +37,9 @@ public class BotView extends JPanel {
 
         g.setColor(Color.BLACK);
         int margin = 50;
-        g.fillRect(0,margin,50,(int)(blackRectHeight)+margin);
+        g.fillRect(0,margin,70,(int)(blackRectHeight)+margin);
         g.setColor(Color.WHITE);
-        g.fillRect(0,(int)(blackRectHeight)+margin,50,boxHeight+margin);
+        g.fillRect(0,(int)(blackRectHeight)+margin,70,boxHeight+margin);
 
 
         evalScoreLabel.setText(botName + "\n" + "Eval:"+Double.toString(evaluation));

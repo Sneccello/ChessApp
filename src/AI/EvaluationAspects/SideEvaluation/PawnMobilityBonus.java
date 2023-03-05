@@ -16,6 +16,9 @@ public class PawnMobilityBonus extends AbstractSideEvaluationAspect {
         this.side = side;
         pawns = getOwnPawns();
         aspectCoefficient = 5;
+        isPenalty = false;
+        adhocMax = aspectCoefficient*8;
+        name = "Pawn Mobility";
     }
 
     @Override

@@ -97,7 +97,19 @@ public class PositionHeuristic extends AbstractBaseEvaluationAspect {
 
         this.piece = piece;
         aspectCoefficient = 4;
-
+        int[][] tableToUse = middleGameTables.get(piece.getType());
+        if(piece.getType() == PieceType.KING){
+            tableToUse = kingEnd;
+        }
+        int mx = -1;
+        for (int[] ints : tableToUse) {
+            for (int j = 0; j < tableToUse[0].length; j++) {
+                mx = Math.max(mx, ints[j]);
+            }
+        }
+        adhocMax=aspectCoefficient*mx;
+        isPenalty = false;
+        name = "Positioning";
     }
 
     @Override

@@ -12,6 +12,9 @@ public class PassedPawnsBonus extends AbstractSideEvaluationAspect {
     public PassedPawnsBonus(Side side){
         this.side = side;
         aspectCoefficient = 75;
+        isPenalty = false;
+        adhocMax = aspectCoefficient*8;
+        name = "Passed Pawns";
     }
 
     @Override

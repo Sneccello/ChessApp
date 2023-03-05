@@ -12,6 +12,9 @@ public class PawnShield extends AbstractBaseEvaluationAspect {
     public PawnShield(King king){
         this.king = king;
         aspectCoefficient = 30;
+        isPenalty = false;
+        adhocMax=aspectCoefficient*3;
+        name = "Pawn Shields";
     }
 
     @Override

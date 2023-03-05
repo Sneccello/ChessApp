@@ -1,6 +1,7 @@
 package BoardElements.Pieces;
 
 import AI.EvaluationAspects.PieceEvaluation.PawnsInGame;
+import AI.EvaluationAspects.PieceEvaluation.PawnsOnSameFilePenalty;
 import AI.EvaluationAspects.PieceEvaluation.RookOnSeventhRankBonus;
 import BoardElements.ChessBoard;
 import BoardElements.Side;
@@ -36,6 +37,7 @@ public class Rook extends SliderPiece implements CastlingPiece {
     protected void initializeEvaluationAspects() {
         evaluationAspects.add(new PawnsInGame(true));
         evaluationAspects.add(new RookOnSeventhRankBonus(this));
+        evaluationAspects.add(new PawnsOnSameFilePenalty(this));
     }
 
     @Override

@@ -10,6 +10,9 @@ public class PawnIslandsPenalty extends AbstractSideEvaluationAspect {
     public PawnIslandsPenalty(Side side){
         this.side = side;
         aspectCoefficient = -20;
+        isPenalty = true;
+        adhocMax = aspectCoefficient*4;
+        name = "Pawn Islands Penalty";
     }
 
     @Override
@@ -30,9 +33,6 @@ public class PawnIslandsPenalty extends AbstractSideEvaluationAspect {
             }
             else if(pawns[i] && ! currentlySeeingIsland){
                 currentlySeeingIsland = true;
-            }
-            else if(pawns[i] && currentlySeeingIsland){
-                //continue
             }
 
         }

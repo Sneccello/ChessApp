@@ -12,9 +12,12 @@ public class KnightMobilityBonus extends AbstractBaseEvaluationAspect {
 
     private Knight knight;
 
-    KnightMobilityBonus(Knight knight){
+    public KnightMobilityBonus(Knight knight){
         this.knight = knight;
         aspectCoefficient = 10;
+        isPenalty = false;
+        adhocMax=aspectCoefficient*8;
+        name = "Knight Mobility";
     }
 
 

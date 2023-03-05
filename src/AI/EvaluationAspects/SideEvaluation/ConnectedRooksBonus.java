@@ -11,6 +11,7 @@ public class ConnectedRooksBonus extends AbstractSideEvaluationAspect {
 
     Rook rook1 = null;
     Rook rook2 = null;
+    private final int bonusValue = 100;
     public ConnectedRooksBonus(Side side){
         this.side = side;
 
@@ -26,6 +27,9 @@ public class ConnectedRooksBonus extends AbstractSideEvaluationAspect {
         }
 
         aspectCoefficient = 1;
+        isPenalty = false;
+        adhocMax = bonusValue*aspectCoefficient;
+        name = "Connected Rooks";
     }
 
     @Override
@@ -35,7 +39,7 @@ public class ConnectedRooksBonus extends AbstractSideEvaluationAspect {
             return 0;
         }
 
-        return 100;
+        return bonusValue;
 
     }
 }
