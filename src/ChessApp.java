@@ -14,6 +14,7 @@ public class ChessApp extends JFrame{
     JPanel promotionOptionsPanel;
 
     EvaluationPanel pieceInfoPanel;
+    EvaluationPanel pieceInfoPanel2;
     public ChessApp(){
 
         this.chessBoardPanel = new ChessBoardView();
@@ -29,8 +30,15 @@ public class ChessApp extends JFrame{
         this.add(evalViews, BorderLayout.WEST);
 
 
-        pieceInfoPanel = new EvaluationPanel();
-        this.add(pieceInfoPanel, BorderLayout.EAST);
+        pieceInfoPanel = new EvaluationPanel(EvaluationPanel.DisplayMode.PIECES, new Color(187,215,236));
+        pieceInfoPanel2 = new EvaluationPanel(EvaluationPanel.DisplayMode.SIDES, new Color(183,240,224));
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.add(pieceInfoPanel);
+        infoPanel.add(pieceInfoPanel2);
+
+        this.add(infoPanel, BorderLayout.EAST);
 
         setVisible(true);
 

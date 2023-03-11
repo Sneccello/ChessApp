@@ -73,6 +73,10 @@ abstract public class Piece implements Evaluable {
         initializeEvaluationAspects();
     }
 
+    public String getDescription(){
+        return color.toString() + " " +type.toString() + " at (row: " + getRow() +"; col: " + getCol();
+    }
+
     protected abstract void initializeEvaluationAspects();
 
 

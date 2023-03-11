@@ -7,4 +7,6 @@ public interface Evaluable {
     public List<AbstractBaseEvaluationAspect> getEvaluationAspects();
 
     public Image getIcon();
+
+    public String getDescription();
 }

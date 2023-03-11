@@ -31,6 +31,11 @@ public class Side implements Evaluable {
         return sideView.getIcon();
     }
 
+    @Override
+    public String getDescription() {
+        return color.toString();
+    }
+
     protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();
     private ChessBot bot;
 
