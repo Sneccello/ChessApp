@@ -4,11 +4,11 @@ public abstract class AbstractBaseEvaluationAspect {
 
     protected double aspectCoefficient;
 
-    public boolean isPenalty() {
+    public Boolean isPenalty() {
         return isPenalty;
     }
 
-    protected boolean isPenalty;
+    protected Boolean isPenalty;
 
     public double getCurrentValue() {
         return currentValue;

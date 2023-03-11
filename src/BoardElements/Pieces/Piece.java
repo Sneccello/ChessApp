@@ -100,9 +100,9 @@ abstract public class Piece implements Evaluable {
     }
 
 
-    public boolean isProtecting(Square s){
-        for(Move m : possibleMoves){
-            if(m.getTo() == s){
+    public boolean isProtecting(Square query){
+        for(Square s : calculateControlledSquares()){
+            if(query == s){
                 return true;
             }
         }
@@ -341,8 +341,6 @@ abstract public class Piece implements Evaluable {
         alive = false;
         mySide.removePiece(this);
     }
-
-
 
 
 

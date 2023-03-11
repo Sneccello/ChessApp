@@ -6,7 +6,6 @@ import Views.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 public class ChessApp extends JFrame{
 
@@ -14,31 +13,24 @@ public class ChessApp extends JFrame{
     public final JPanel evalViews;
     JPanel promotionOptionsPanel;
 
-    PieceEvaluationPanel infoPanel;
+    EvaluationPanel pieceInfoPanel;
     public ChessApp(){
-        this.setPreferredSize(new Dimension(1500,800));
 
-//        this.setVisible(true);
         this.chessBoardPanel = new ChessBoardView();
 
         ChessBoard.board.registerView(chessBoardPanel);
         this.add(chessBoardPanel, BorderLayout.CENTER);
 
-
         promotionOptionsPanel = new PromotionOptionsPanel();
         this.add(promotionOptionsPanel, BorderLayout.SOUTH);
 
-        evalViews = new JPanel(new FlowLayout());
+        evalViews = new JPanel();
         evalViews.setPreferredSize(new Dimension(200,800));
         this.add(evalViews, BorderLayout.WEST);
 
-        ChessBoard.board.registerView(chessBoardPanel);
-        this.add(chessBoardPanel, BorderLayout.CENTER);
 
-
-
-        infoPanel = new PieceEvaluationPanel();
-        this.add(infoPanel, BorderLayout.EAST);
+        pieceInfoPanel = new EvaluationPanel(true,true);
+        this.add(pieceInfoPanel, BorderLayout.EAST);
 
         setVisible(true);
 
@@ -76,8 +68,10 @@ public class ChessApp extends JFrame{
         board.addSide(blackSide);
 
 
-        PieceView.setPieceEvaluationPanel(window.infoPanel);
-        window.infoPanel.updateInfo(board.getSquareViews()[0]);
+        PieceView.setPieceEvaluationPanel(window.pieceInfoPanel);
+
+        window.pieceInfoPanel.updateInfo(board.getSquareViews()[0].getObservedSquare().getPieceOnThisSquare());
+        PieceView.setDisplayedInEvaluation(board.getSquareViews()[0].getObservedSquare().getPieceOnThisSquare().getView());
         window.revalidate();
 
         ChessBoard.board.calculateMoves(); //calculate possible moves

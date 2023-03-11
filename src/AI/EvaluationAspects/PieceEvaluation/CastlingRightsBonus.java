@@ -22,13 +22,13 @@ public class CastlingRightsBonus extends AbstractBaseEvaluationAspect {
     @Override
     protected int calculateAspectValue() {
         int sidesWhereKingCanCastle = 0;
-        if(king.canCastleLong()){
+        if( ! king.getCastled().value() && ! king.getRookLongSide().hasLeftStartingSquare()){
             sidesWhereKingCanCastle++;
-        }
-        if(king.canCastleShort()){
-            sidesWhereKingCanCastle++;
-        }
 
+        }
+        if( ! king.getCastled().value() && ! king.getRookShortSide().hasLeftStartingSquare()){
+            sidesWhereKingCanCastle++;
+        }
         return sidesWhereKingCanCastle*castlingRightValue;
     }
 }

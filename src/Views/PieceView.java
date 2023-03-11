@@ -9,15 +9,29 @@ import java.io.IOException;
 
 public class PieceView {
 
+
     Image image;
     Piece observedPiece;
-    boolean selected = false;
 
-    public static PieceEvaluationPanel getEvaluationPanel() {
+
+
+    private static PieceView displayedInEvaluation;
+
+
+    public static EvaluationPanel getEvaluationPanel() {
         return evaluationPanel;
     }
+    public Image getImage() {
+        return image;
+    }
+    public static PieceView getDisplayedInEvaluation() {
+        return displayedInEvaluation;
+    }
 
-    private static PieceEvaluationPanel evaluationPanel;
+    public static void setDisplayedInEvaluation(PieceView displayedInEvaluation) {
+        PieceView.displayedInEvaluation = displayedInEvaluation;
+    }
+    private static EvaluationPanel evaluationPanel;
 
     public PieceView(String imageName, Piece p) {
         String path = System.getProperty("user.dir") + "\\textures\\" + imageName;
@@ -38,7 +52,8 @@ public class PieceView {
     }
 
 
-    public static void setPieceEvaluationPanel(PieceEvaluationPanel p){
+
+    public static void setPieceEvaluationPanel(EvaluationPanel p){
         evaluationPanel=p;
     }
 

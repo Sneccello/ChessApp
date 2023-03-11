@@ -12,7 +12,7 @@ public class RookOnSeventhRankBonus extends AbstractBaseEvaluationAspect {
         this.rook = rook;
         aspectCoefficient = 1;
         isPenalty = false;
-        adhocMax = aspectValue*aspectValue;
+        adhocMax = aspectValue*aspectCoefficient;
         name = "Rook On The 7th Rank";
     }
 

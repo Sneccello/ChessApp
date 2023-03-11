@@ -13,7 +13,7 @@ public class PawnsOnSameFilePenalty extends AbstractBaseEvaluationAspect {
         aspectCoefficient = -15;
         isPenalty=true;
         adhocMax=2*aspectCoefficient;
-        name = "Pawns On The Same File";
+        name = "Pawns On The Same File" + (isPenalty() ? " Penalty"  : "");
     }
 
     @Override

@@ -37,7 +37,9 @@ public class SquareView {
 
     }
 
-
+    public Square getObservedSquare(){
+        return observedSquare;
+    }
     public void paint(Graphics g){
 
         if(Piece.getSelectedPiece()!= null &&  Piece.getSelectedPiece().canStepTo(observedSquare)){

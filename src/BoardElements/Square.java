@@ -1,6 +1,7 @@
 package BoardElements;
 
 import BoardElements.Pieces.Piece;
+import Views.PieceView;
 import Views.SquareView;
 
 public class Square {

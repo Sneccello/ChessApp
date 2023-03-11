@@ -17,7 +17,7 @@ public class KingTropism extends AbstractBaseEvaluationAspect {
         this.king = king;
         isPenalty=false;
         adhocMax = aspectCoefficient*800*aspectCoefficient;
-        name = "Enemy Distance from King";
+        name = "Enemy Distance from Pieces";
     }
 
     private double euclideanDistanceBetween(Square s1, Square s2){

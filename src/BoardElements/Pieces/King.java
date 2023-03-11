@@ -17,7 +17,20 @@ public class King extends Piece implements CastlingPiece {
 
     private BinaryFlag leftStartingPositionFlag = new BinaryFlag(false);
 
+    public BinaryFlag getCastled() {
+        return castled;
+    }
+
     private BinaryFlag castled = new BinaryFlag(false);
+
+    public Rook getRookShortSide() {
+        return rookShortSide;
+    }
+
+    public Rook getRookLongSide() {
+        return rookLongSide;
+    }
+
     private Rook rookShortSide;
     private Rook rookLongSide;
 

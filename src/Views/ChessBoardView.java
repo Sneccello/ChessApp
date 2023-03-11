@@ -1,6 +1,7 @@
 package Views;
 
 import BoardElements.ChessBoard;
+import BoardElements.Pieces.Piece;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,8 +14,8 @@ public class ChessBoardView extends JPanel implements MouseListener {
 
 //    private final ChessBoardView boardView;
 
-    int WIDTH = 800;
-    int HEIGHT =  800;
+    int WIDTH = 640;
+    int HEIGHT =  640;
 //    SquareView[] squareViews;
     private final ArrayList<SideView> sideViews = new ArrayList<>();
 
@@ -22,9 +23,9 @@ public class ChessBoardView extends JPanel implements MouseListener {
         this.setBackground(Color.GRAY);
         this.setVisible(true);
         this.setSize(new Dimension(WIDTH,HEIGHT));
+        this.setPreferredSize(new Dimension(WIDTH,HEIGHT));
 //        this.boardView = boardView;
         this.addMouseListener(this);
-
     }
 
 
@@ -56,14 +57,6 @@ public class ChessBoardView extends JPanel implements MouseListener {
         return null;
     }
 
-    public void locateClick(int x, int y){
-        for(SquareView tw : ChessBoard.board.getSquareViews()){
-            if(tw.clickIsOnMe(x,y)){
-                tw.clicked();
-                break;
-            }
-        }
-    }
 
     @Override
     public void paintComponent(Graphics g){
@@ -97,11 +90,18 @@ public class ChessBoardView extends JPanel implements MouseListener {
         else if(e.getButton() == MouseEvent.BUTTON3){
             SquareView sw = locateSquare(e.getX(),e.getY());
             if(sw != null){
-                PieceView.getEvaluationPanel().updateInfo(sw);
+                Piece piece = sw.getObservedSquare().getPieceOnThisSquare();
+                if(piece != null){
+                    PieceView pw = piece.getView();
+                    PieceView.setDisplayedInEvaluation(pw);
+                    PieceView.getEvaluationPanel().updateInfo(pw.observedPiece);
+                }
+
             }
 
         }
         repaint();
+
     }
 
     @Override

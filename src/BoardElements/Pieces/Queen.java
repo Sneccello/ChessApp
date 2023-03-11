@@ -1,7 +1,5 @@
 package BoardElements.Pieces;
 
-import AI.EvaluationAspects.PieceEvaluation.EarlyDevelopmentPenalty;
-import BoardElements.ChessBoard;
 import BoardElements.Side;
 import BoardElements.Square;
 
@@ -16,7 +14,7 @@ public class Queen extends SliderPiece{
 
     @Override
     protected void initializeEvaluationAspects() {
-        evaluationAspects.add(new EarlyDevelopmentPenalty(6));
+        return;
     }
 
     @Override
