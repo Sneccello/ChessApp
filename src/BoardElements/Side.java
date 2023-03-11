@@ -2,6 +2,7 @@ package BoardElements;
 
 import AI.ChessBot;
 import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
+import AI.EvaluationAspects.Evaluable;
 import AI.EvaluationAspects.SideEvaluation.*;
 import ChessAbstracts.Moves.Move;
 import BoardElements.Pieces.*;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Side {
+public class Side implements Evaluable {
     private final PieceColor color;
     ArrayList<Piece> regularPieces = new ArrayList<Piece>(15); //everything but the king
     private King king;

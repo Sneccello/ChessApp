@@ -1,6 +1,7 @@
 package Views;
 
 import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
+import AI.EvaluationAspects.Evaluable;
 import BoardElements.Pieces.Piece;
 
 import javax.swing.*;
@@ -8,11 +9,13 @@ import java.awt.*;
 
 public class PieceEvalBarPlot extends JPanel {
 
-    public void setCurrentPiece(Piece currentPiece) {
-        this.currentPiece = currentPiece;
+    private Evaluable evaluable;
+
+    public void setCurrentPiece(Evaluable evaluable) {
+        this.evaluable = evaluable;
     }
 
-    private Piece currentPiece;
+
 
     public PieceEvalBarPlot() {
         setPreferredSize(new Dimension(500,600));
@@ -23,7 +26,7 @@ public class PieceEvalBarPlot extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (currentPiece == null) {
+        if (evaluable == null) {
             return;
         }
 
@@ -32,7 +35,7 @@ public class PieceEvalBarPlot extends JPanel {
         int maxBarWidth = 100;
         int rowHeight = 40;
         int drawnBars = 0;
-        for (AbstractBaseEvaluationAspect aspect : currentPiece.getEvaluationAspects()) {
+        for (AbstractBaseEvaluationAspect aspect : evaluable.getEvaluationAspects()) {
 
             if (aspect.getName() == null) {
                 continue;

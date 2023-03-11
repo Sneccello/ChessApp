@@ -1,6 +1,7 @@
 package BoardElements.Pieces;
 
 import AI.EvaluationAspects.AbstractBaseEvaluationAspect;
+import AI.EvaluationAspects.Evaluable;
 import AI.EvaluationAspects.PieceEvaluation.BasePieceValueBonus;
 import AI.EvaluationAspects.PieceEvaluation.PositionHeuristic;
 import BoardElements.*;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-abstract public class Piece {
+abstract public class Piece implements Evaluable {
 
     protected PieceType type;
     protected PieceColor color;
