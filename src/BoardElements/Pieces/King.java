@@ -10,6 +10,7 @@ import ChessAbstracts.Check;
 import ChessAbstracts.Moves.Castle;
 import ChessAbstracts.Moves.Move;
 
+import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -52,6 +53,8 @@ public class King extends Piece implements CastlingPiece {
     public void castled(boolean b){
         castled.setValue(b);
     }
+
+
 
 
     @Override

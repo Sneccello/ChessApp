@@ -8,6 +8,7 @@ import ChessAbstracts.Moves.Move;
 import BoardElements.Pieces.*;
 import Views.SideView;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,11 @@ public class Side implements Evaluable {
 
     public ArrayList<AbstractBaseEvaluationAspect> getEvaluationAspects() {
         return evaluationAspects;
+    }
+
+    @Override
+    public Image getIcon() {
+        return sideView.getIcon();
     }
 
     protected ArrayList<AbstractBaseEvaluationAspect> evaluationAspects = new ArrayList<>();

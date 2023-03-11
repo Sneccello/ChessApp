@@ -93,7 +93,6 @@ public class ChessBoardView extends JPanel implements MouseListener {
                 Piece piece = sw.getObservedSquare().getPieceOnThisSquare();
                 if(piece != null){
                     PieceView pw = piece.getView();
-                    PieceView.setDisplayedInEvaluation(pw);
                     PieceView.getEvaluationPanel().updateInfo(pw.observedPiece);
                 }
 

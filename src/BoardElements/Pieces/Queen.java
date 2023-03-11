@@ -14,7 +14,6 @@ public class Queen extends SliderPiece{
 
     @Override
     protected void initializeEvaluationAspects() {
-        return;
     }
 
     @Override

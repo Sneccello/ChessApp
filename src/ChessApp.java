@@ -29,7 +29,7 @@ public class ChessApp extends JFrame{
         this.add(evalViews, BorderLayout.WEST);
 
 
-        pieceInfoPanel = new EvaluationPanel(true,true);
+        pieceInfoPanel = new EvaluationPanel();
         this.add(pieceInfoPanel, BorderLayout.EAST);
 
         setVisible(true);
@@ -71,7 +71,6 @@ public class ChessApp extends JFrame{
         PieceView.setPieceEvaluationPanel(window.pieceInfoPanel);
 
         window.pieceInfoPanel.updateInfo(board.getSquareViews()[0].getObservedSquare().getPieceOnThisSquare());
-        PieceView.setDisplayedInEvaluation(board.getSquareViews()[0].getObservedSquare().getPieceOnThisSquare().getView());
         window.revalidate();
 
         ChessBoard.board.calculateMoves(); //calculate possible moves

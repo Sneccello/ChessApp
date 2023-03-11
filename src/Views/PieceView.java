@@ -24,13 +24,7 @@ public class PieceView {
     public Image getImage() {
         return image;
     }
-    public static PieceView getDisplayedInEvaluation() {
-        return displayedInEvaluation;
-    }
 
-    public static void setDisplayedInEvaluation(PieceView displayedInEvaluation) {
-        PieceView.displayedInEvaluation = displayedInEvaluation;
-    }
     private static EvaluationPanel evaluationPanel;
 
     public PieceView(String imageName, Piece p) {

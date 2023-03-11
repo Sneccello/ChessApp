@@ -9,6 +9,9 @@ public class SideView {
         return pieceViews;
     }
 
+    public Image getIcon(){
+        return null; //TODO
+    }
     private final ArrayList<PieceView> pieceViews = new ArrayList<>();
 
 

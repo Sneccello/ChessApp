@@ -13,18 +13,12 @@ public class EvaluationPanel extends JPanel {
     private final int WIDTH = 500;
     private final int HEIGHT = 600;
 
-    private boolean drawSelectedPieceImage;
-    private boolean verticalLayout;
-    public EvaluationPanel(boolean verticalLayout,boolean drawSelectedPieceImage){
+
+    public EvaluationPanel(){
         setPreferredSize(new Dimension(WIDTH,HEIGHT));
 
-        this.drawSelectedPieceImage = drawSelectedPieceImage;
-        this.verticalLayout = verticalLayout;
     }
 
-    public EvaluationPanel(boolean verticalLayout){
-        this(verticalLayout,false);
-    }
 
     public void updateInfo(Evaluable evaluable){
         if(evaluable != null){
@@ -77,14 +71,8 @@ public class EvaluationPanel extends JPanel {
         drawBars(g);
 
 
-        if(drawSelectedPieceImage){
-            PieceView pieceView = PieceView.getDisplayedInEvaluation();
-            if(pieceView != null) {
-                Image selectedPieceImage = pieceView.getImage();
-                g.drawImage(selectedPieceImage, WIDTH/2-40, 0, null);
-            }
-
-        }
+        Image selectedPieceImage = evaluable.getIcon();
+        g.drawImage(selectedPieceImage, WIDTH/2-40, 0, null);
 
     }
 

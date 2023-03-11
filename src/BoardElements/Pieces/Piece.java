@@ -10,6 +10,7 @@ import ChessAbstracts.Pin;
 
 import Views.PieceView;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +50,9 @@ abstract public class Piece implements Evaluable {
     }
 
 
-
+    public Image getIcon(){
+        return view.getImage();
+    }
     Piece(PieceType type, int posCol, int posRow,Side side){
         this.type = type;
         this.color = side.getColor();
