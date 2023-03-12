@@ -1,13 +1,13 @@
-import AI.ChessBot;
-import BoardElements.ChessBoard;
-import BoardElements.Side;
-import BoardElements.Pieces.*;
-import Views.*;
-import Views.panels.eval.BotEvalBar;
-import Views.panels.EvaluationPanel;
-import Views.panels.PromotionOptionsPanel;
-import Views.panels.eval.PieceEvaluationView;
-import Views.panels.eval.SideEvaluationDisplay;
+import ai.ChessBot;
+import boardelements.ChessBoard;
+import boardelements.Side;
+import boardelements.pieces.*;
+import views.*;
+import views.panels.eval.BotEvalBar;
+import views.panels.EvaluationPanel;
+import views.panels.PromotionOptionsPanel;
+import views.panels.eval.PieceEvaluationView;
+import views.panels.eval.SideEvaluationDisplay;
 
 import javax.swing.*;
 import java.awt.*;
