@@ -68,10 +68,10 @@ public class Side implements Evaluable {
     private void initializeEvaluationAspects(){
         evaluationAspects.add(new BishopPairBonus(this));
         evaluationAspects.add(new ConnectedRooksBonus(this));
-        evaluationAspects.add(new PassedPawnsBonus(this));
+//        evaluationAspects.add(new PassedPawnsBonus(this)); #TODO buggy
         evaluationAspects.add(new PawnIslandsPenalty(this));
         evaluationAspects.add(new PawnMobilityBonus(this));
-        evaluationAspects.add(new PinsPenalty(this));
+//        evaluationAspects.add(new PinsPenalty(this));#TODO buggy
         evaluationAspects.add(new ColorWeaknessPenalty(this));
         evaluationAspects.add(new OpponentCheckmatedBonus(this));
     }

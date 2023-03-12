@@ -3,6 +3,11 @@ import BoardElements.ChessBoard;
 import BoardElements.Side;
 import BoardElements.Pieces.*;
 import Views.*;
+import Views.panels.eval.BotEvalBar;
+import Views.panels.EvaluationPanel;
+import Views.panels.PromotionOptionsPanel;
+import Views.panels.eval.PieceEvaluationView;
+import Views.panels.eval.SideEvaluationDisplay;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +19,7 @@ public class ChessApp extends JFrame{
     JPanel promotionOptionsPanel;
 
     EvaluationPanel pieceInfoPanel;
-    EvaluationPanel pieceInfoPanel2;
+    EvaluationPanel sideInfoPanel;
     public ChessApp(){
 
         this.chessBoardPanel = new ChessBoardView();
@@ -30,13 +35,15 @@ public class ChessApp extends JFrame{
         this.add(evalViews, BorderLayout.WEST);
 
 
-        pieceInfoPanel = new EvaluationPanel(EvaluationPanel.DisplayMode.PIECES, new Color(187,215,236));
-        pieceInfoPanel2 = new EvaluationPanel(EvaluationPanel.DisplayMode.SIDES, new Color(183,240,224));
+//        pieceInfoPanel = new EvaluationPanel(EvaluationPanel.DisplayMode.PIECES, new Color(187,215,236));
+//        pieceInfoPanel2 = new EvaluationPanel(EvaluationPanel.DisplayMode.SIDES, new Color(183,240,215,236));
+        pieceInfoPanel = new EvaluationPanel(new PieceEvaluationView(500,400));
+        sideInfoPanel = new EvaluationPanel(new SideEvaluationDisplay(500,400));
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.add(pieceInfoPanel);
-        infoPanel.add(pieceInfoPanel2);
+        infoPanel.add(sideInfoPanel);
 
         this.add(infoPanel, BorderLayout.EAST);
 
@@ -65,7 +72,7 @@ public class ChessApp extends JFrame{
 
 
         ChessBot bot = new ChessBot(blackSide);
-        BotView botview = new BotView(bot);
+        BotEvalBar botview = new BotEvalBar(bot);
         bot.registerView(botview);
         window.evalViews.add(botview);
 
@@ -77,6 +84,7 @@ public class ChessApp extends JFrame{
 
 
         PieceView.setPieceEvaluationPanel(window.pieceInfoPanel);
+        SideView.setSideEvaluationPanel(window.sideInfoPanel);
 
         window.pieceInfoPanel.updateInfo(board.getSquareViews()[0].getObservedSquare().getPieceOnThisSquare());
         window.revalidate();

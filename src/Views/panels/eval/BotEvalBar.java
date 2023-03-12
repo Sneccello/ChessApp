@@ -1,11 +1,11 @@
-package Views;
+package Views.panels.eval;
 
 import AI.ChessBot;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class BotView extends JPanel {
+public class BotEvalBar extends JPanel {
 
     private ChessBot bot;
     private final JTextArea  evalScoreLabel = new JTextArea();
@@ -13,7 +13,7 @@ public class BotView extends JPanel {
 
     int columnHeight = 7*80;
 
-    public BotView(ChessBot bot){
+    public BotEvalBar(ChessBot bot){
         this.setPreferredSize(new Dimension(70, columnHeight));
         this.add(evalScoreLabel, BorderLayout.SOUTH);
         this.bot = bot;

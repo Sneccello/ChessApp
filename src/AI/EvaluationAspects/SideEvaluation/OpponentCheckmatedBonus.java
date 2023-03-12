@@ -12,6 +12,7 @@ public class OpponentCheckmatedBonus extends AbstractSideEvaluationAspect{
         aspectCoefficient = 1;
         adhocMax=checkmateValue*aspectCoefficient;
         name = "Given Checkmate";
+        isPenalty=false;
     }
 
     @Override

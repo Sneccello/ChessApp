@@ -1,12 +1,22 @@
 package Views;
 
+import Views.panels.EvaluationPanel;
+import Views.panels.eval.EvaluationView;
+
 import java.awt.*;
 import java.util.ArrayList;
 
 public class SideView {
 
+
+    private static EvaluationPanel sideInfoPanel;
+
     public ArrayList<PieceView> getPieceViews() {
         return pieceViews;
+    }
+
+    public static void setSideEvaluationPanel(EvaluationPanel panel) {
+        sideInfoPanel=panel;
     }
 
     public Image getIcon(){
@@ -27,6 +37,7 @@ public class SideView {
         for(PieceView pw : pieceViews){
             pw.paint(g);
         }
+        sideInfoPanel.updateInfo(null);
     }
 
 }

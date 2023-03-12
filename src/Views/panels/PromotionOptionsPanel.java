@@ -1,4 +1,4 @@
-package Views;
+package Views.panels;
 
 import BoardElements.Pieces.Pawn;
 import BoardElements.Pieces.Piece;
