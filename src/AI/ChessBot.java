@@ -3,14 +3,11 @@ package AI;
 import BoardElements.ChessBoard;
 import BoardElements.Pieces.PieceColor;
 import BoardElements.Pieces.PieceType;
-import BoardElements.Square;
 import ChessAbstracts.Moves.Move;
 import BoardElements.Side;
 import Control.Player;
 import BoardElements.Pieces.Piece;
-import Views.BotView;
-import Views.ChessBoardView;
-import com.sun.jdi.ArrayReference;
+import Views.panels.eval.BotEvalBar;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,7 +20,7 @@ public class ChessBot implements Player {
     private final int MAX_SEARCH_DEPTH = 4;
     private final HashMap<String,Double> evaluationCache = new HashMap();
 
-    private BotView view;
+    private BotEvalBar view;
     private double currentEvaluation = 0.0;
 
     //This hashmap is for caching board states
@@ -59,7 +56,7 @@ public class ChessBot implements Player {
         return mySide;
     }
 
-    public void registerView(BotView view){
+    public void registerView(BotEvalBar view){
         this.view = view;
     }
 

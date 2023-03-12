@@ -14,18 +14,7 @@ public abstract class AbstractSideEvaluationAspect extends AbstractBaseEvaluatio
 
     protected abstract int calculateAspectValue();
 
-    protected ArrayList<Pawn> getOwnPawns(){
-        ArrayList<Pawn> pawns = new ArrayList<>();
-        for(Piece p : side.getRegularPieces()){
-            if(p.getType() == PieceType.PAWN){
 
-                pawns.add( (Pawn) p );
-
-            }
-        }
-
-        return pawns;
-    }
 
 
 }

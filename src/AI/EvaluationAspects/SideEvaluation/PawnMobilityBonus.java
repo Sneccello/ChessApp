@@ -14,28 +14,32 @@ public class PawnMobilityBonus extends AbstractSideEvaluationAspect {
     ArrayList<Pawn> pawns;
     public PawnMobilityBonus(Side side){
         this.side = side;
-        pawns = getOwnPawns();
+
         aspectCoefficient = 5;
         isPenalty = false;
         adhocMax = aspectCoefficient*8;
         name = "Pawn Mobility";
     }
+    protected ArrayList<Pawn> getOwnPawns(){
+        ArrayList<Pawn> pawns = new ArrayList<>();
+        for(Piece p : side.getRegularPieces()){
+            if(p.getType() == PieceType.PAWN && p.isAlive()){
 
-    @Override
-    protected int calculateAspectValue() {
+                pawns.add( (Pawn) p );
 
-        int nPawnMoves = 0;
-        Pawn recentlyCapturedPawn = null;
-        for(Pawn p : pawns){
-            if(p.isAlive() && ! p.getPossibleMoves().isEmpty()){
-                nPawnMoves++;
-            }
-            else{
-                recentlyCapturedPawn = p;
             }
         }
-        if(recentlyCapturedPawn != null) {
-            pawns.remove(recentlyCapturedPawn);
+
+        return pawns;
+    }
+    @Override
+    protected int calculateAspectValue() {
+        pawns = getOwnPawns();
+        int nPawnMoves = 0;
+        for(Pawn p : pawns){
+            if(! p.getPossibleMoves().isEmpty()){
+                nPawnMoves++;
+            }
         }
 
         return nPawnMoves;

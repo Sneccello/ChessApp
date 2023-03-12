@@ -5,6 +5,7 @@ import AI.EvaluationAspects.Evaluable;
 import AI.EvaluationAspects.PieceEvaluation.BasePieceValueBonus;
 import AI.EvaluationAspects.PieceEvaluation.PositionHeuristic;
 import BoardElements.*;
+import ChessAbstracts.BinaryFlag;
 import ChessAbstracts.Moves.Move;
 import ChessAbstracts.Pin;
 
@@ -25,7 +26,7 @@ abstract public class Piece implements Evaluable {
     protected ArrayList<Pin> pins = new ArrayList<>();
     protected int rowIncrementTowardsOpponent;
     protected double relativeValue;
-    protected boolean alive = true;
+    protected BinaryFlag alive = new BinaryFlag(true);
 
     protected static Piece selectedPiece;
 
@@ -290,11 +291,11 @@ abstract public class Piece implements Evaluable {
     public void reviveAt(Square tile){
         moveTo(tile);
         mySide.addPiece(this);
-        alive = true;
+        alive.reset();
     }
 
     public boolean isAlive(){
-        return alive;
+        return alive.value();
     }
 
 
@@ -345,7 +346,7 @@ abstract public class Piece implements Evaluable {
 
 
     public void beCaptured(){
-        alive = false;
+        alive.setValue(false);
         mySide.removePiece(this);
     }
 

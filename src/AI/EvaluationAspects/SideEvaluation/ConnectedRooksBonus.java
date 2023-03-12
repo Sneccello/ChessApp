@@ -38,8 +38,7 @@ public class ConnectedRooksBonus extends AbstractSideEvaluationAspect {
         if( ! rook1.isAlive() || ! rook2.isAlive()){
             return 0;
         }
-
-        return bonusValue;
+        return rook1.isProtecting(rook2.getSquare()) ? bonusValue : 0;
 
     }
 }

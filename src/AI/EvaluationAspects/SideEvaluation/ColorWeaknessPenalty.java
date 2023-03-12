@@ -55,6 +55,6 @@ public class ColorWeaknessPenalty extends AbstractSideEvaluationAspect {
         int blackSquaresStrength = pawnsOnBlackSquares + minorPiecesOnBlackSquares;
 
 
-        return Math.abs(whiteSquaresStrength - blackSquaresStrength);
+        return Math.max(0,-Math.abs(whiteSquaresStrength - blackSquaresStrength)+6);
     }
 }

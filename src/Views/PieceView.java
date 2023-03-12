@@ -1,6 +1,7 @@
 package Views;
 
 import BoardElements.Pieces.Piece;
+import Views.panels.EvaluationPanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

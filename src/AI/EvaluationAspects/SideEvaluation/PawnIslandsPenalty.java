@@ -41,7 +41,7 @@ public class PawnIslandsPenalty extends AbstractSideEvaluationAspect {
             islands++;
         }
 
-        return islands;
+        return islands-1;
 
     }
 }

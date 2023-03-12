@@ -8,10 +8,10 @@ public class PinsPenalty extends AbstractSideEvaluationAspect {
     Side side;
     public PinsPenalty(Side side){
         this.side = side;
-        aspectCoefficient = 20;
+        aspectCoefficient = -20;
         isPenalty = true;
         adhocMax = aspectCoefficient*1;
-        name = "Got Pinned Piece";
+        name = "Pinned Piece Penalty";
     }
 
     @Override
