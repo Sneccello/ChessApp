@@ -1,3 +1,34 @@
-# ChessApp
-Hobby Chess Application, the long term goal is a chess engine of some sort<br>
-Current State: Rules affecting the legal moves are fully implemented
+# Description
+A cobby Chess Application, where the goal is to setup a primitive chess engine based on a [minimax](https://en.wikipedia.org/wiki/Minimax) algorithm (with [alpha-beta pruning](https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning) while practising OO design patterns and principles.
+ <img src="https://user-images.githubusercontent.com/78796219/229346830-1dcce46e-c68b-4199-9d35-6dcb050e1de1.png">
+
+# Engine
+The engine uses many [evaluation aspects](/src/ai/evaluationaspects) which try to grasp the (relative) strenghts of different pieces or sides (e.g. how well positioned the individual pieces are or how broken up the pawn structure is). The given position is then evaluated with a linear combination of these evaluation aspects, similar to [this idea](https://en.wikipedia.org/wiki/Evaluation_function). The weights are set empirically for now, it would be interesting to create a framework for finding the best weights with, for example, a genetic algorithm.
+
+## Currently implemented evaluation aspects for different entities
+### All Pieces
+- Relative Value of the given piece - based on the [general concensus of piece values](https://en.wikipedia.org/wiki/Chess_piece_relative_value)
+- Position Heuristic of the given piece - described [here](https://www.chessprogramming.org/Simplified_Evaluation_Function)
+- Undefended Piece - whether this piece is protected by other pieces
+### King 
+- Castling Right - whether the King still has the ability to castle
+- King Tropism - how far the enemy pieces are to the king 
+- Pawn Shield - how protected the king is with pawns in front 
+### Knight
+- Knight Mobility - how many squares the knight has to move
+- Pawns In Game - how many pawns there are alive in the game (<u><i>The higher the better</i></u>)
+### Rook
+- Enemy 7th Rank positioning - gives the rook bonus if it is positioned on the 7th rank, controlling the enemy backline movement 
+- Pawns on the same file - how many pawns there are on the same file as the rook 
+- Pawns in Game  - how many pawns there are alive in the game (<u><i>The lower the better</i></u>)
+### Individual Sides
+- Bishop Pair - whether the side has the bishop pair
+- Color weakness - how unbalanced the pieces are on colors (e.g. only having the light colored bishop with all pawns on light tiles is a disadvantage) 
+- Connected Rooks - whether the rooks are protecting eachoter
+- Pawn islands - how broken up the pawn structure is
+- Pawn mobility - how many pawn moves can a side make
+- Pins - how many pinned pieces the side has (<u><i>The lower the better</i></u>)
+
+
+
+
