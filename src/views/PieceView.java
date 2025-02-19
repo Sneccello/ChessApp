@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class PieceView {
 
@@ -29,7 +30,7 @@ public class PieceView {
     private static EvaluationPanel evaluationPanel;
 
     public PieceView(String imageName, Piece p) {
-        String path = System.getProperty("user.dir") + "\\textures\\" + imageName;
+        String path = Paths.get(System.getProperty("user.dir"), "textures", imageName).toString();
         try {
             image = ImageIO.read(new File(path));
             int ogHeight = image.getHeight(null);
